@@ -1,0 +1,7 @@
+Output: DiffusionPrototypePreview.mp4
+
+Scene order:
+C:\Users\ADMIN\OneDrive\Desktop\video_ml\media\videos\s00_roadmap\480p15\RoadmapOverview.mp4
+C:\Users\ADMIN\OneDrive\Desktop\video_ml\media\videos\s01_forward_ou_wiener\480p15\ForwardOUWiener.mp4
+C:\Users\ADMIN\OneDrive\Desktop\video_ml\media\videos\s02_markov\480p15\MarkovChainScene.mp4
+C:\Users\ADMIN\OneDrive\Desktop\video_ml\media\videos\s03_reverse_chain\480p15\ReverseMarkovChain.mp4
