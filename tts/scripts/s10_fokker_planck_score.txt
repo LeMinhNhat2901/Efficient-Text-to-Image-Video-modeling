@@ -1,0 +1,49 @@
+The answer is the Fokker-Planck equation.
+
+SDEs describe how individual samples move.
+
+Fokker-Planck describes how the whole probability density evolves.
+
+In the animation, the drift term and the diffusion term are assembled into a single equation.
+
+The density behaves like a fluid moving under a velocity field v:
+
+partial p over partial t,
+
+equals negative divergence of p times v.
+
+This means that probability mass is flowing through space.
+
+But now look at the velocity field:
+
+v of x and t,
+
+equals alpha of x and t,
+
+minus beta of t over two,
+
+times nabla log p of x and t.
+
+And there it is again.
+
+The score.
+
+nabla log p of x and t.
+
+The same score compass from the discrete story returns inside the continuous probability flow.
+
+This is the bridge between the two worlds.
+
+In discrete time, the score helped us step from noisy points toward higher probability.
+
+In continuous time, the score becomes part of the velocity field that moves the entire probability density.
+
+So Fokker-Planck is not just a terrifying equation with divergence symbols trying to ruin your afternoon.
+
+It is the law of motion for probability itself.
+
+It tells us how the cloud stretches, compresses, diffuses, and flows.
+
+And if probability can flow forward, then naturally, we ask:
+
+Can it flow backward?

@@ -1,0 +1,63 @@
+All of this is beautiful on paper.
+
+But computers do not take infinitely small steps.
+
+Computers take finite steps, because a GPU also has a schedule and would like to go home eventually.
+
+So to approximate a continuous trajectory, we need numerical solvers.
+
+The simplest is Euler's method.
+
+At the current point, look at the direction, then step forward.
+
+y n plus one equals y n,
+
+plus h times f of t n and y n.
+
+The problem is that if the true curve bends, Euler can drift away quickly.
+
+In the animation, the red path shoots off the ideal curve.
+
+Euler is brave.
+
+Euler is simple.
+
+Euler is also occasionally overconfident.
+
+Runge-Kutta is more careful.
+
+RK4 sends out several slope estimates:
+
+k one, k two, k three, and k four.
+
+One looks at the beginning of the step.
+
+Two look around the middle.
+
+One looks near the end.
+
+Then RK4 combines them:
+
+y n plus one,
+
+equals y n plus h over six,
+
+times k one plus two k two plus two k three plus k four.
+
+Instead of trusting one direction, it averages several informed guesses.
+
+Visually, the RK4 path stays much closer to the ideal continuous trajectory than Euler.
+
+In diffusion models, especially in probability-flow or ODE-based views,
+
+numerical solvers like these approximate the path through time.
+
+The neural network provides the learned score or vector field.
+
+The solver decides how to step through it.
+
+So the model learns the geometry.
+
+The solver walks the geometry.
+
+And the final sample is the result of both.

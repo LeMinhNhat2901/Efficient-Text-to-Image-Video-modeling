@@ -1,0 +1,43 @@
+We now take the discrete reverse steps and make them denser.
+
+The gaps shrink.
+
+The ticks on the time axis divide again and again: half, quarter, eighth, sixteenth.
+
+Eventually, the separate breadcrumbs blur into a continuous curve.
+
+When the steps become infinitesimally small,
+
+the discrete noise term is replaced by a continuous random motion term:
+
+d W.
+
+This is the increment of a Wiener process.
+
+The Wiener process is the standard mathematical model for continuous random motion.
+
+It is the formal version of "this particle is jittering forever, and no, it is not just nervous."
+
+A pure noise process can be written simply as:
+
+d X equals square root beta of t, times d W.
+
+At the level of individual particles, the paths look random.
+
+Each particle wiggles in its own unpredictable way.
+
+But now we change perspective.
+
+Instead of following one particle, we follow the whole cloud.
+
+As the particles spread, we group them into a histogram.
+
+Then the histogram becomes a smooth density curve.
+
+This is the key shift:
+
+Individual sample paths are random.
+
+The evolution of the probability density is structured.
+
+And that density evolution is what the next equations describe.

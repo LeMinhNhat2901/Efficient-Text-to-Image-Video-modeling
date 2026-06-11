@@ -1,0 +1,309 @@
+Kịch bản Video: Toán học của Diffusion - Phần 1: Viết lại mũi tên thời gian bằng Xác suất
+Cảnh 1: Lời mở đầu - Trực giác về sự phá vỡ cấu trúc (Tương ứng Slide 1 & 2)
+Thời lượng ước tính: 3 - 3.5 phút
+[Chỉ dẫn Manim & Hình ảnh]:
+Mở đầu bằng màn hình đen. Dùng ImageMobject hiện bức ảnh chú chó con rõ nét (từ Slide 2).
+Góc phải dưới, tạo bộ đếm t = 0 chạy dần lên t = T.
+Khi t tăng, dùng vòng lặp để cập nhật ảnh chú chó, cộng thêm nhiễu (noise) ngẫu nhiên vào các pixel cho đến khi nó thành một bức ảnh nhiễu hạt hoàn toàn (pure noise).
+Chuyển cảnh (Transition): Thu nhỏ ảnh nhiễu lại. Dùng Manim vẽ một đồ thị 2D. Các điểm dữ liệu tạo thành một phân phối hình xoắn ốc (spiral distribution / trajectory) màu xanh lam ở t=0. Sau đó, cho các điểm này từ từ tản ra, khuếch tán thành một đám mây nhiễu hỗn độn ở t=T.
+[Giọng đọc (Voiceover)]: "Hãy nhìn vào bức ảnh chú chó này. Khi chúng ta tác động thêm các nhiễu ngẫu nhiên vào nó qua từng bước thời gian, rất nhanh thôi, bức ảnh tuyệt đẹp này sẽ bị phá vỡ hoàn toàn thành một mớ nhiễu vô nghĩa. Nó giống như trực giác về Entropy: cấu trúc có xu hướng bị phá vỡ khi ta thêm nhiễu ngẫu nhiên vào hệ thống. Trong toán học, chúng ta có thể biểu diễn dữ liệu này như một tập hợp các điểm. Hãy tưởng tượng cấu trúc dữ liệu ban đầu là một phân phối hình xoắn ốc trật tự. Quá trình tản mác nó — việc thêm nhiễu từng bước một — được gọi là Quá trình Tiến (Forward process). Nhưng, bài toán thú vị của Trí tuệ Nhân tạo hiện đại là: Liệu chúng ta có thể làm điều ngược lại? Bắt đầu từ một mớ nhiễu vô định... và tua ngược quá trình đó, lần ngược về vùng dữ liệu có xác suất cao để tạo ra một mẫu mới có cấu trúc giống hệt dữ liệu ban đầu? Quá trình đi lùi này (Backward process) chính là trái tim của các Mô hình Khuếch tán (Diffusion Models)."
+
+--------------------------------------------------------------------------------
+Cảnh 2: Toán học của Quá trình Tiến - Forward Process (Tương ứng Slide 3 & 4)
+Thời lượng ước tính: 4 phút
+[Chỉ dẫn Manim & Hình ảnh]:
+Giữ lại một điểm (hạt) trên màn hình. Sử dụng MathTex để gõ từ từ phương trình: X 
+t
+​
+ =α 
+t
+​
+ X 
+t−1
+​
+ + 
+β 
+t
+​
+ 
+
+​
+ G.
+Chuyển cảnh: Dùng Manim Axes vẽ đồ thị hàm số theo thời gian t. Vẽ vùng bóng mờ màu xám (expected standard deviation). Cho 5 đường (random walks) chạy zic-zắc dao động từ trái sang phải, mở rộng dần trong vùng xám đó.
+Hiện công thức nhảy cóc: X 
+t
+​
+ = 
+α
+ˉ
+  
+t
+​
+ X 
+0
+​
+ + 
+β
+ˉ
+​
+  
+t
+​
+ 
+
+​
+ G.
+[Giọng đọc]: "Để máy tính hiểu được sự phá vỡ cấu trúc này, chúng ta cần định lượng nó bằng phương trình. Trạng thái của dữ liệu ở một bước thời gian t, gọi là X 
+t
+​
+ , được tính toán dựa trên ngay bước trước đó, X 
+t−1
+​
+ . Công thức được viết như sau: X 
+t
+​
+ =α 
+t
+​
+ X 
+t−1
+​
+ + 
+β 
+t
+​
+ 
+
+​
+ G. Ở đây, α 
+t
+​
+  là một hệ số nhỏ hơn 1, giúp 'co' dữ liệu cũ lại một chút để nó không bị nổ tung. Phần thứ hai, ta cộng thêm G - một đại lượng nhiễu Gaussian độc lập (Independent Gaussian noise). Lượng nhiễu này được kiểm soát bởi β 
+t
+​
+  đóng vai trò là lịch trình phương sai (variance schedule), và  
+β 
+t
+​
+ 
+
+​
+  chính là hệ số tỷ lệ độ lệch chuẩn của lượng nhiễu được thêm vào. Đây là đồ thị mô phỏng nó. Các đường rắc rối này là quỹ đạo của các điểm dữ liệu. Vùng màu xám biểu diễn độ lệch chuẩn ngày càng mở rộng theo thời gian. Và nhờ tính chất của phân phối chuẩn, toán học cho phép bạn 'nhảy cóc' từ ảnh gốc X 
+0
+​
+  ra thẳng bước X 
+t
+​
+  bất kỳ, thông qua công thức gộp: X 
+t
+​
+ = 
+α
+ˉ
+  
+t
+​
+ X 
+0
+​
+ + 
+β
+ˉ
+​
+  
+t
+​
+ 
+
+​
+ G. Trong đó,  
+α
+ˉ
+  
+t
+​
+  đơn giản là tích của tất cả các hệ số α từ bước 1 đến bước t:  
+α
+ˉ
+  
+t
+​
+ =∏ 
+i=1
+t
+​
+ α 
+i
+​
+ ."
+
+--------------------------------------------------------------------------------
+Cảnh 3: Tung đồng xu và tính chất Markov (Tương ứng Slide 5, 7, 8)
+Thời lượng ước tính: 3.5 phút
+[Chỉ dẫn Manim & Hình ảnh]:
+Dùng Manim vẽ hoạt hình một đồng xu đang tung lên và rơi xuống (thay cho ảnh Donald Duck để tránh bản quyền).
+Dùng Manim vẽ đồ thị mạng lưới: x 
+0
+​
+ →x 
+1
+​
+ →⋯→x 
+t−1
+​
+ →x 
+t
+​
+ →x 
+t+1
+​
+ . Làm sáng mũi tên giữa x 
+t−1
+​
+  và x 
+t
+​
+ .
+Gõ công thức joint distribution: p(x 
+0:T
+​
+ )=p(x 
+0
+​
+ )∏ 
+t=1
+T
+​
+ p(x 
+t
+​
+ ∣x 
+t−1
+​
+ ).
+[Giọng đọc]: "Hãy chú ý lại vào phương trình tiến của chúng ta. Nó có một tính chất cực kỳ quan trọng: Trạng thái X 
+t
+​
+  chỉ được tính toán từ X 
+t−1
+​
+ . Nó giống như việc bạn đưa ra quyết định bằng cách tung một đồng xu. Kết quả của lần tung hiện tại hoàn toàn độc lập với việc trước đó bạn đã tung ra mặt sấp hay ngửa bao nhiêu lần. Trong xác suất thống kê, điều này tuân theo Tính chất Markov (Markov Property). Nó phát biểu rằng: Khi đã biết trạng thái X 
+t−1
+​
+ , mọi quá khứ xa hơn không cung cấp thêm bất kỳ thông tin trực tiếp nào cho X 
+t
+​
+ . Nhờ tính độc lập có điều kiện này, xác suất chung (joint probability) của toàn bộ quá trình biến đổi dài dằng dặc từ x 
+0
+​
+  đến x 
+T
+​
+  có thể được viết gọn lại thành một tích của các xác suất chuyển tiếp qua từng bước. Sự đơn giản hóa này chính là nền tảng để chúng ta thực hiện bước đảo ngược."
+
+--------------------------------------------------------------------------------
+Cảnh 4: Phép thuật Telescoping và Xác suất Đảo ngược (Tương ứng Slide 9, 10, 11)
+Thời lượng ước tính: 4 phút (Đây là đoạn cao trào "ăn tiền" nhất)
+[Chỉ dẫn Manim & Hình ảnh]:
+Trình diễn Chuỗi lùi: Vẽ các node trạng thái nhưng hướng mũi tên lùi lại: x 
+T
+​
+ →x 
+T−1
+​
+ →⋯→x 
+0
+​
+ .
+Dòng chữ hiện ra: "Does a Markov Chain have a reverse?"
+Gõ phương trình forward chuẩn: q(x 
+0:T
+​
+ )=q(x 
+0
+​
+ )∏ 
+t=1
+T
+​
+ q(x 
+t
+​
+ ∣x 
+t−1
+​
+ )
+Áp dụng Bayes, gõ nhấp nháy công thức: q(x 
+t
+​
+ ∣x 
+t−1
+​
+ )= 
+q(x 
+t−1
+​
+ )
+q(x 
+t−1
+​
+ ∣x 
+t
+​
+ )q(x 
+t
+​
+ )
+​
+ 
+Thế vào phương trình gốc, khai triển Π thành một chuỗi các phân số.
+Hiệu ứng Telescoping: Dùng Line(start, end).set_color(RED) gạch chéo triệt tiêu các mẫu số q(x 
+t−1
+​
+ ) với tử số q(x 
+t−1
+​
+ ) của phân số liền kề.
+Thu gọn lại thành khung đỏ chốt hạ: q(x 
+0:T
+​
+ )=q(x 
+T
+​
+ )∏ 
+t=1
+T
+​
+ q(x 
+t−1
+​
+ ∣x 
+t
+​
+ ).
+[Giọng đọc]: "Bây giờ là câu hỏi cốt lõi: Nếu chúng ta bắt đầu từ đám mây nhiễu ở x 
+T
+​
+ , liệu ta có thể tính toán xác suất q(x 
+t−1
+​
+ ∣x 
+t
+​
+ ) để tìm đường về không? Định lý 2.2.5 về sự đảo ngược của Chuỗi Markov trả lời là CÓ. Về mặt xác suất, ta hoàn toàn có thể viết cùng một phân phối chung (joint distribution) nhưng theo chiều ngược lại. Hãy viện đến Định lý Bayes. Xác suất tiến q(x 
+t
+​
+ ∣x 
+t−1
+​
+ ) có thể được viết lại dưới dạng phân số chứa xác suất lùi. Thay phân số này vào công thức tích Markov ban đầu, toán học bắt đầu trình diễn vẻ đẹp thi vị của nó. Khi ta khai triển chuỗi nhân này ra, tử số của cụm này chính là mẫu số của cụm ngay trước đó. Triệt tiêu... Triệt tiêu... và triệt tiêu. Hiện tượng rút gọn dây chuyền này gọi là 'Telescoping'. Tất cả sụp đổ và để lại cho chúng ta một công thức cực kỳ gọn gàng. Khung chữ nhật màu đỏ này mang một ý nghĩa to lớn: Nó chứng minh rằng chuỗi đi lùi cũng là một chuỗi Markov. Bằng cách viết lại quá trình theo chiều ngược dưới dạng xác suất, nếu chúng ta tìm được chính xác q(x 
+t−1
+​
+ ∣x 
+t
+​
+ ), ta có thể lần ngược về vùng dữ liệu có xác suất cao để tạo ra cấu trúc ban đầu. Nhưng, làm sao để máy tính tính ra được phân phối lùi này trong thực tế? Đó là lúc ta không giải phương trình bằng tay nữa, mà sẽ dùng Mạng Nơ-ron (Neural Networks) để học cách xấp xỉ quá trình đó..."
+
+--------------------------------------------------------------------------------
+Một chút lưu ý cho bạn khi code Manim: Đoạn Telescoping ở Cảnh 4 (Slide 10
+) bạn nên dùng VGroup chứa các phân số, sau đó dùng Succession(Create(line1), Create(line2), ...) để tạo cảm giác triệt tiêu tuần tự từ trái sang phải, nó sẽ tạo ra hiệu ứng "wow" rất mạnh về mặt thị giác! Kịch bản hiện tại đã hoàn toàn an toàn về mặt Toán học/Machine Learning. Chúc bạn code Manim thật mượt mà!

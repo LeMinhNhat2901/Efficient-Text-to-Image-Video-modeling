@@ -1,0 +1,59 @@
+Imagine being lost in a dark forest.
+
+In the fairy tale, Hansel and Gretel try to find their way back using breadcrumbs.
+
+In diffusion, we are also lost - but our forest is a high-dimensional cloud of noise.
+
+And our breadcrumbs are not made of bread.
+
+They are made of probability.
+
+Now look at this probability terrain.
+
+Bright regions are where data is likely to live.
+
+Dark regions are low-probability noise.
+
+In our two-dimensional toy example,
+
+the data forms something like a Swiss roll - a structured region inside a much larger space.
+
+A noisy point y falls into the dark region.
+
+What direction should it move?
+
+This is where the score function appears.
+
+nabla log p X of y.
+
+The score is a local compass.
+
+At the current point y, it points in the direction where log-probability increases fastest.
+
+Notice the word local.
+
+The score does not magically draw a straight line all the way home.
+
+It does not open Google Maps and say, "In 300 meters, turn left at the Gaussian."
+
+It only tells us the best infinitesimal direction from where we are right now.
+
+In the animation, one arrow appears at y.
+
+Then nearby arrows pulse into view.
+
+Finally, the whole vector field appears as a probability compass over the terrain.
+
+If we take a tiny step along the score, the point moves toward a region of higher probability.
+
+Repeat this many times, and the point begins to climb back toward the data structure.
+
+This is the intuition behind the reverse process:
+
+not one giant jump from noise to data, but many small probability-guided steps.
+
+The score is the compass.
+
+The data manifold is home.
+
+And the noisy point is just trying not to get eaten by birds.

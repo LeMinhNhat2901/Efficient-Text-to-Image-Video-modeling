@@ -1,3 +1,18 @@
-manim
-numpy
+# Main render environment for Manim scenes.
+manim>=0.20.1,<0.21
 
+# Numeric animation data, paths, noise fields, and particles.
+numpy>=2.0,<3
+
+# Image preprocessing for generated diffusion/noise frames.
+Pillow>=10,<12
+
+# Local MP4 inspection, preview stitching, and audio mux fallback.
+av>=17,<18
+
+# System tools still required outside pip:
+# - FFmpeg available on PATH, or inside the active conda environment.
+# - A LaTeX distribution available on PATH for MathTex equations.
+#   Recommended on Windows: MiKTeX or TeX Live.
+#
+# Chatterbox TTS intentionally lives in a separate environment. See tts/README.md.

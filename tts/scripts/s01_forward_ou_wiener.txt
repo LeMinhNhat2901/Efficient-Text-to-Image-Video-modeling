@@ -1,0 +1,73 @@
+To make this destruction useful, we need to describe it mathematically.
+
+Let X t be the state of our data at time step t.
+
+The forward process says that X t is produced from the previous state X t minus one.
+
+A simple version looks like this:
+
+X t equals alpha t times X t minus one,
+
+plus square root beta t times G.
+
+This equation has two jobs.
+
+The first term, alpha t times X t minus one, keeps some of the old signal.
+
+Usually, alpha t is less than one, so it slightly shrinks the previous data.
+
+In plain English: it keeps the old image, but makes it a bit weaker.
+
+The second term, square root beta t times G, adds Gaussian noise.
+
+Here, G is independent Gaussian noise.
+
+The value beta t controls the noise variance, and square root beta t is the scale of the noise we actually add.
+
+So at every step, we do two things: preserve a little signal, inject a little randomness.
+
+If this sounds like carefully destroying your data, that is exactly what it is.
+
+We are not smashing the image with a hammer.
+
+We are dissolving it with a pipette.
+
+Now look at the variance circle.
+
+The horizontal direction represents how much clean structure remains.
+
+The vertical direction represents how much noise we add.
+
+As time increases, the vector rotates away from the structure axis and toward the noise axis.
+
+The important idea is that the process is controlled.
+
+We do not want the data to explode into infinity.
+
+We want the signal to fade while the noise takes over in a mathematically predictable way.
+
+This is why the random walks stay inside a growing but controlled band of uncertainty.
+
+The trajectories look messy, but the distribution around them is not arbitrary.
+
+And because Gaussian noise behaves so nicely, we get a shortcut.
+
+Instead of simulating every tiny step from X zero to X t, we can jump directly:
+
+X t equals alpha bar t times X zero,
+
+plus square root beta bar t times G.
+
+Here, alpha bar t summarizes all the signal-preserving factors from the first step up to time t.
+
+This shortcut is extremely useful.
+
+During training, we can choose any time step t, create a noisy version immediately,
+
+and ask the model to learn how to undo it.
+
+So the forward process is not the hard part.
+
+We designed it.
+
+The real challenge is the backward process.

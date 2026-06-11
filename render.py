@@ -11,7 +11,40 @@ SCENES = [
     ("scenes/s01_forward_ou_wiener.py", "ForwardOUWiener"),
     ("scenes/s02_markov.py", "MarkovChainScene"),
     ("scenes/s03_reverse_chain.py", "ReverseMarkovChain"),
+    ("scenes/s04_score_compass.py", "ScoreCompassScene"),
+    ("scenes/s05_local_linear.py", "LocalLinearScoreScene"),
+    ("scenes/s06_mse_conditional_mean.py", "MSEConditionalMeanScene"),
+    ("scenes/s07_training_loop.py", "TrainingLoopScene"),
+    ("scenes/s08_sde_drift_diffusion.py", "ContinuousTimeFlowScene"),
+    ("scenes/s09_probability_flow_ode.py", "DriftDiffusionScene"),
+    ("scenes/s10_fokker_planck_score.py", "FokkerPlanckScoreScene"),
+    ("scenes/s11_reverse_distribution.py", "ReverseDistributionScene"),
+    ("scenes/s12_runge_kutta_solver.py", "RungeKuttaSolverScene"),
+    ("scenes/s13_finale_failure.py", "FinaleFailureScene"),
 ]
+
+QUALITY_DIRS = {
+    "-ql": "480p15",
+    "-qm": "720p30",
+    "-qh": "1080p60",
+}
+
+AUDIO_SCENES = {
+    "RoadmapOverview": ("s00", Path("tts") / "outputs" / "s00_roadmap.wav"),
+    "ForwardOUWiener": ("s01", Path("tts") / "outputs" / "s01_forward_ou_wiener.wav"),
+    "MarkovChainScene": ("s02", Path("tts") / "outputs" / "s02_markov.wav"),
+    "ReverseMarkovChain": ("s03", Path("tts") / "outputs" / "s03_reverse_chain.wav"),
+    "ScoreCompassScene": ("s04", Path("tts") / "outputs" / "s04_score_compass.wav"),
+    "LocalLinearScoreScene": ("s05", Path("tts") / "outputs" / "s05_local_linear.wav"),
+    "MSEConditionalMeanScene": ("s06", Path("tts") / "outputs" / "s06_mse_conditional_mean.wav"),
+    "TrainingLoopScene": ("s07", Path("tts") / "outputs" / "s07_training_loop.wav"),
+    "ContinuousTimeFlowScene": ("s08", Path("tts") / "outputs" / "s08_sde_drift_diffusion.wav"),
+    "DriftDiffusionScene": ("s09", Path("tts") / "outputs" / "s09_probability_flow_ode.wav"),
+    "FokkerPlanckScoreScene": ("s10", Path("tts") / "outputs" / "s10_fokker_planck_score.wav"),
+    "ReverseDistributionScene": ("s11", Path("tts") / "outputs" / "s11_reverse_distribution.wav"),
+    "RungeKuttaSolverScene": ("s12", Path("tts") / "outputs" / "s12_runge_kutta_solver.wav"),
+    "FinaleFailureScene": ("s13", Path("tts") / "outputs" / "s13_finale_failure.wav"),
+}
 
 
 def main() -> None:
@@ -51,6 +84,27 @@ def main() -> None:
             cmd.insert(4, "--disable_caching")
         print(" ".join(cmd))
         subprocess.run(cmd, check=True, cwd=project_root)
+
+        audio_scene = AUDIO_SCENES.get(scene_name)
+        if audio_scene is None:
+            continue
+        scene_key, audio_path = audio_scene
+        if not (project_root / audio_path).exists():
+            print(f"audio missing for {scene_name}: {audio_path}")
+            continue
+        mux_cmd = [
+            sys.executable,
+            "scripts/mux_scene_audio.py",
+            "--scene",
+            scene_key,
+            "--quality-dir",
+            QUALITY_DIRS[quality_flag],
+            "--audio",
+            str(audio_path),
+            "--replace",
+        ]
+        print(" ".join(mux_cmd))
+        subprocess.run(mux_cmd, check=True, cwd=project_root)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,1 @@
+Forward diffusion destroys structure in a controlled way. Reverse diffusion asks whether probability can describe a path back from noise.

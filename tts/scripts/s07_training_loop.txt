@@ -1,0 +1,63 @@
+Now we can write the training algorithm.
+
+Choose a timestep t.
+
+Take a sample from the cleaner previous state, which we can think of as x t minus one.
+
+Add forward noise to obtain a noisy state y equals x t.
+
+Then give y and t to the neural network.
+
+The network predicts:
+
+mu theta of y and t,
+
+a cleaner state, one step back.
+
+We compare this prediction to the true cleaner target using squared error.
+
+At first, the prediction may be very wrong.
+
+The loss meter is red.
+
+The reverse arrow points in a suspicious direction.
+
+Not ideal.
+
+The model is basically saying, "I think the way home is...
+
+through that wall."
+
+But after many updates, the prediction improves.
+
+The loss decreases.
+
+The arrow becomes more aligned with the true reverse direction.
+
+Repeat this over many samples and many noise levels, and the network learns a map of the probability terrain.
+
+During sampling, we start from pure noise.
+
+The model gives one small reverse step.
+
+Then another.
+
+Then another.
+
+Each step is like a learned breadcrumb.
+
+After many such steps, the noisy cloud moves back toward a structured data region.
+
+Again, this is not an exact physical rewind of one original image.
+
+It is a learned probabilistic path from noise toward high-probability data.
+
+So far, however, every step has been discrete.
+
+But what happens if we make the steps infinitely small?
+
+The breadcrumbs become a continuous path.
+
+And diffusion enters the world of stochastic differential equations.
+
+# PART 3 - TIME FLOWS, DENSITY EVOLVES, AND FOKKER-PLANCK APPEARS

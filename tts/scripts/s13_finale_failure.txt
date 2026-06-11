@@ -1,0 +1,63 @@
+When everything works, diffusion feels almost magical.
+
+Noise becomes structure.
+
+A random cloud becomes an image.
+
+A meaningless starting point becomes something that looks like it came from the data distribution.
+
+But diffusion is not magic.
+
+The score field is learned.
+
+And learned fields can be wrong.
+
+If the neural network gives a bad direction,
+
+the numerical solver may follow it perfectly - and still go to the wrong place.
+
+That is the terrifying part: a very accurate solver following a bad compass is still just confidently lost.
+
+In the animation, one red arrow points the sample away from the data region.
+
+The solver follows it.
+
+The point leaves the safe probability terrain.
+
+The final image becomes distorted, unstable, or strange.
+
+These are failure cases.
+
+They remind us that diffusion models are chains of approximations:
+
+the reverse process is approximated,
+
+the score is approximated,
+
+the neural network is approximated,
+
+and the continuous path is approximated by numerical steps.
+
+And yet, when these approximations work together, the result is extraordinary.
+
+From Markov chains to score functions, from MSE to neural networks, from Ito processes to Fokker-Planck equations,
+
+the same idea keeps returning:
+
+Structure can be recovered by following the geometry of probability.
+
+Diffusion models do not physically reverse time.
+
+They learn a probabilistic path from noise back toward data.
+
+From noise to structure -
+
+that is the mathematics of diffusion.
+
+Thank you for watching.
+
+Forward is designed.
+
+Reverse is learned.
+
+And probability shows the way.

@@ -1,0 +1,97 @@
+Look at this puppy.
+
+For now, it is perfectly recognizable.
+
+Two eyes, a nose, fur, background - a tiny, adorable bundle of pixels.
+
+Very scientific.
+
+Very cute.
+
+But now...
+
+let us do something slightly cruel...
+
+in the name of mathematics.
+
+At every time step, we add a little bit of random noise.
+
+Not too much at first.
+
+Just enough to disturb the image.
+
+Then a little more.
+
+And more.
+
+After many steps, the puppy disappears.
+
+What remains is not a dog.
+
+Not a face.
+
+Not even a bad drawing.
+
+It is just noise.
+
+This is the easy direction.
+
+If you add random noise to a structured object for long enough, structure breaks down.
+
+It is the same intuition behind entropy:
+
+when randomness keeps entering a system...
+
+order tends to dissolve.
+
+Now let us switch from pixels to geometry.
+
+Instead of thinking of this image as a picture, imagine it as a point in a very high-dimensional space.
+
+A small image may have thousands or millions of pixel values.
+
+In machine learning language, an image is just one point in a huge coordinate system.
+
+A very emotional point, if it is a puppy, but still a point.
+
+For visualization, we compress this idea into two dimensions.
+
+Suppose our clean data lives on a beautiful spiral-shaped structure.
+
+This is the data distribution:
+
+ordered, meaningful, and concentrated.
+
+Now we add noise step by step.
+
+The spiral begins to blur.
+
+The points spread out.
+
+The structure dissolves into a cloud.
+
+This direction is called the forward process.
+
+But diffusion models are built around the opposite question.
+
+Can we start from pure noise...
+
+and step by step...
+
+move back toward structure?
+
+Not necessarily to recover this exact original puppy - that would be too strong.
+
+Instead, can we learn a path from random noise...
+
+toward regions where realistic data is likely to live?
+
+That learned backward process is the heart of diffusion models.
+
+So the story of this video is simple:
+
+First, we destroy structure in a controlled way.
+
+Then, using probability, neural networks, and a surprising amount of beautiful mathematics...
+
+we learn how to come back.

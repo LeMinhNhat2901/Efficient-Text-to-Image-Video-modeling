@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*/__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+
+# Local environments
+.venv/
+venv/
+env/
+.env
+.env.*
+
+# Editor / OS noise
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Manim render/cache artifacts
+media/
+!media/.gitkeep
+*.log
+
+# Manim/LaTeX generated caches from older runs
+assets/equations/
+assets/generated/
+
+# Local review frame grabs
+tmp_review_frames/
+
+# TTS outputs and private voice references
+tts/outputs/
+tts/reference/*
+!tts/reference/.gitkeep
+
+# Temporary export folders for final deliverables
+exports/
+output/
+outputs/

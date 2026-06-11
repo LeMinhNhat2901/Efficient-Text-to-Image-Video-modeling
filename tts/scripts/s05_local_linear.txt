@@ -1,0 +1,67 @@
+Now we need to turn this compass into an equation.
+
+Globally, the probability landscape is complicated.
+
+It bends, twists, folds, and generally behaves like a mathematical mountain range.
+
+But locally, if we zoom into a tiny neighborhood around y, the landscape becomes much simpler.
+
+This is the idea of local linear approximation.
+
+Inside the magnifying glass, the curved contour lines start to look almost straight.
+
+The complicated terrain becomes approximately a tilted plane.
+
+And in that small neighborhood, the theorem gives us a beautiful approximation:
+
+mu of X given y,
+
+is approximately y plus beta times nabla log p X of y.
+
+Let us unpack this.
+
+mu of X given y is the conditional mean - the average previous state that could have produced the noisy point y.
+
+The formula says:
+
+Start at the current point y.
+
+Look at the score direction.
+
+Take a small step in that direction.
+
+The result approximates the backward mean.
+
+The coefficient beta controls the step size.
+
+If beta is small, the step is short and stable.
+
+The local approximation remains trustworthy.
+
+If beta is too large, the point overshoots.
+
+It jumps past the region where the local linear picture was valid.
+
+In the animation, the stable step lands near the probability ridge,
+
+while the oversized step flies off like a student who clicked "submit" without reading the question.
+
+This is why diffusion uses many small steps.
+
+Small steps are easier to approximate.
+
+But now we hit the real wall.
+
+The formula requires nabla log p X of y.
+
+For a two-dimensional toy landscape, we can draw it.
+
+For real images with millions of dimensions, computing this score explicitly is essentially impossible.
+
+So the formula is beautiful.
+
+But it hides the hardest part:
+
+How do we get the score?
+
+That is where learning enters.

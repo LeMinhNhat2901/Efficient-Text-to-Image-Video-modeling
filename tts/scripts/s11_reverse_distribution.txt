@@ -1,0 +1,45 @@
+In the forward direction, probability spreads outward.
+
+Data becomes noise.
+
+The vector field points away from structure.
+
+The cloud becomes wider, softer, and less informative.
+
+Now freeze time.
+
+The arrows stop.
+
+The noisy cloud is suspended.
+
+And the score field appears.
+
+The time-reversal theorem, associated with Brian Anderson's 1982 work, tells us something subtle and powerful:
+
+Under suitable assumptions, the reverse process can also be described, in distribution, by another Ito process.
+
+The phrase "in distribution" matters.
+
+We are not physically rewinding every individual particle along the exact path it took.
+
+That would be a little too much to ask, and also suspiciously close to time travel.
+
+Instead, we are reversing the evolution of the probability distribution.
+
+The reverse dynamics gain a score-dependent force.
+
+This force counteracts the spreading caused by diffusion.
+
+In the animation, the forward vector field fades.
+
+The reverse arrows appear.
+
+The cloud that was spreading outward begins to bend back inward.
+
+The score acts like a steering force.
+
+It turns the flow away from pure noise and back toward regions of high probability.
+
+This is the continuous-time version of our earlier learned breadcrumbs.
+
+One tiny motion at a time, the probability cloud is guided back toward structure.

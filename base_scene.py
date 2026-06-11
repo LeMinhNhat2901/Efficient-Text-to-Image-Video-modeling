@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import hashlib
 import math
 import re
 import random
-import shutil
 from pathlib import Path
 
 import numpy as np
@@ -13,80 +11,108 @@ from manim.utils.color import ManimColor
 
 from config import *
 
+ASSET_ROOT = Path(__file__).resolve().parent / "assets"
+
 
 class DiffusionScene(MovingCameraScene):
     """Shared style and small visual primitives for the diffusion video."""
-
-    _latex_available = shutil.which("latex") is not None
 
     def setup(self):
         super().setup()
         self.camera.background_color = BG
 
+    def first_asset(self, *relative_paths: str) -> Path | None:
+        for rel_path in relative_paths:
+            path = ASSET_ROOT / rel_path
+            if path.exists():
+                return path
+        return None
+
+    def add_background_texture(self, *relative_paths: str, opacity: float = 0.04) -> Mobject | None:
+        path = self.first_asset(*relative_paths)
+        if path is None:
+            return None
+        texture = ImageMobject(str(path))
+        texture.scale_to_fit_width(config.frame_width)
+        if texture.height < config.frame_height:
+            texture.scale_to_fit_height(config.frame_height)
+        texture.move_to(ORIGIN)
+        texture.set_opacity(opacity)
+        texture.set_z_index(-50)
+        self.add(texture)
+        return texture
+
     def scene_title(self, text: str, subtitle: str | None = None) -> VGroup:
-        title = Text(text, font_size=TITLE_SIZE, color=TEXT, weight=BOLD)
+        title = Text(text, font=FONT_TITLE, font_size=TITLE_SIZE, color=TEXT, weight=BOLD)
         title.to_edge(UP, buff=0.35)
         if subtitle is None:
             return VGroup(title)
-        sub = Text(subtitle, font_size=SMALL_SIZE, color=MUTED)
+        sub = Text(subtitle, font=FONT_SUBTITLE, font_size=SMALL_SIZE, color=MUTED)
         sub.next_to(title, DOWN, buff=0.12)
         return VGroup(title, sub)
 
-    def label(self, text: str, size: int = BODY_SIZE, color: str = TEXT) -> Text:
-        return Text(text, font_size=size, color=color)
+    def label(self, text: str, size: int = BODY_SIZE, color: str = TEXT, font: str | None = None) -> Text:
+        resolved_font = font or (FONT_TITLE if size >= SUBTITLE_SIZE else FONT_BODY)
+        return Text(text, font=resolved_font, font_size=size, color=color)
+
+    def hook_question(self, text: str, color: str = TEXT, width: float = 11.8) -> Text:
+        question = Text(text, font=FONT_SUBTITLE, font_size=SECTION_SIZE, color=color, weight=BOLD)
+        if question.width > width:
+            question.scale_to_fit_width(width)
+        question.to_edge(UP, buff=0.42)
+        return question
+
+    def takeaway(self, text: str, color: str = ACCENT, width: float = 10.8) -> VGroup:
+        label = Text(
+            text,
+            font=FONT_SUBTITLE,
+            font_size=SMALL_SIZE,
+            color=TEXT,
+            weight=BOLD,
+        )
+        if label.width > width - 0.65:
+            label.scale_to_fit_width(width - 0.65)
+        box = self.soft_box(
+            width=max(width, label.width + 0.7),
+            height=max(0.56, label.height + 0.28),
+            color=color,
+            fill_opacity=0.075,
+            stroke_opacity=0.62,
+        )
+        label.move_to(box)
+        return VGroup(box, label)
+
+    def concept_card(
+        self,
+        title: str,
+        body: str,
+        color: str = ACCENT,
+        width: float = 4.2,
+        height: float = 1.28,
+    ) -> VGroup:
+        box = self.soft_box(width, height, color=color, fill_opacity=0.055, stroke_opacity=0.58)
+        title_mob = self.label(title, SUBTITLE_SIZE, color)
+        body_mob = self.label(body, SMALL_SIZE, MUTED)
+        if title_mob.width > width - 0.5:
+            title_mob.scale_to_fit_width(width - 0.5)
+        if body_mob.width > width - 0.5:
+            body_mob.scale_to_fit_width(width - 0.5)
+        content = VGroup(title_mob, body_mob).arrange(DOWN, buff=0.13).move_to(box)
+        return VGroup(box, content)
+
+    def hold_to_time(self, start_time: float, target_duration: float) -> None:
+        elapsed = max(0.0, self.time - start_time)
+        remaining = target_duration - elapsed
+        if remaining > 0:
+            self.wait(remaining)
 
     def eq(self, tex: str, size: int = EQ_SIZE, color: str = TEXT, plain: str | None = None) -> Mobject:
-        if DiffusionScene._latex_available:
-            try:
-                return MathTex(tex, font_size=size, color=color)
-            except Exception:
-                DiffusionScene._latex_available = False
         try:
-            return self._mathtext_svg(tex, size=size, color=color)
+            return MathTex(tex, font_size=size, color=color)
         except Exception:
-            pass
-        fallback = plain or self._tex_to_readable_text(tex)
-        return Text(fallback, font_size=max(12, int(size * 0.58)), color=color)
-
-    def _mathtext_svg(self, tex: str, size: int = EQ_SIZE, color: str = TEXT) -> SVGMobject:
-        import matplotlib
-
-        matplotlib.use("Agg")
-        import matplotlib.pyplot as plt
-
-        cache_dir = Path("assets") / "equations"
-        cache_dir.mkdir(parents=True, exist_ok=True)
-        math = self._mathtext_compatible(tex)
-        digest = hashlib.sha1(f"{math}|{size}|{color}".encode("utf-8")).hexdigest()[:16]
-        svg_path = cache_dir / f"eq_{digest}.svg"
-
-        if not svg_path.exists():
-            fig = plt.figure(figsize=(0.01, 0.01), dpi=300)
-            fig.patch.set_alpha(0)
-            fig.text(
-                0,
-                0,
-                f"${math}$",
-                color=color,
-                fontsize=max(8, size),
-                fontfamily="serif",
-                math_fontfamily="cm",
-            )
-            fig.savefig(svg_path, format="svg", transparent=True, bbox_inches="tight", pad_inches=0.015)
-            plt.close(fig)
-
-        mob = SVGMobject(str(svg_path))
-        mob.set_color(color)
-        return mob
-
-    def _mathtext_compatible(self, tex: str) -> str:
-        text = tex.strip()
-        text = text.replace(r"\text{learned reverse}", r"\mathrm{learned\;reverse}")
-        text = text.replace(r"\text{true reverse}", r"\mathrm{true\;reverse}")
-        text = re.sub(r"\\text\{([^{}]+)\}", lambda m: r"\mathrm{" + m.group(1).replace(" ", r"\;") + "}", text)
-        text = text.replace(r"\boldsymbol", r"\mathbf")
-        text = text.replace(r"\mathbb{E}", r"\mathbb{E}")
-        return text
+            if plain is None:
+                raise
+            return Text(plain, font=FONT_BODY, font_size=max(12, int(size * 0.58)), color=color)
 
     def display_equation(
         self,
@@ -117,9 +143,38 @@ class DiffusionScene(MovingCameraScene):
             mob.scale_to_fit_height(max_height)
         return mob
 
+    def framed_image(
+        self,
+        path: Path,
+        width: float,
+        height: float,
+        color: str = ACCENT,
+        fill_opacity: float = 0.035,
+    ) -> Group:
+        image = ImageMobject(str(path))
+        self.fit_to_box(image, width, height)
+        box = self.soft_box(
+            width=max(width + 0.18, image.width + 0.18),
+            height=max(height + 0.18, image.height + 0.18),
+            color=color,
+            fill_opacity=fill_opacity,
+            stroke_opacity=0.72,
+        )
+        image.move_to(box)
+        return Group(box, image)
+
     def compact_eq(self, tex: str, size: int = 26, color: str = TEXT, plain: str | None = None) -> Mobject:
-        label = Text(plain or self._compact_math_text(tex), font_size=max(12, int(size * 0.62)), color=color)
-        return self.fit_to_box(label, max_width=0.72, max_height=0.34)
+        try:
+            label = MathTex(tex, font_size=size, color=color)
+        except Exception:
+            label = Text(
+                plain or self._compact_math_text(tex),
+                font=FONT_CODE,
+                font_size=max(12, int(size * 0.62)),
+                color=color,
+                disable_ligatures=True,
+            )
+        return self.fit_to_box(label, max_width=0.84, max_height=0.38)
 
     def _compact_math_text(self, tex: str) -> str:
         text = self._tex_to_readable_text(tex)
@@ -128,7 +183,7 @@ class DiffusionScene(MovingCameraScene):
 
     def section_tag(self, text: str, color: str = ACCENT) -> VGroup:
         dot = Dot(radius=0.055, color=color)
-        label = Text(text.upper(), font_size=SMALL_SIZE, color=color, weight=BOLD)
+        label = Text(text.upper(), font=FONT_SUBTITLE, font_size=SMALL_SIZE, color=color, weight=BOLD)
         return VGroup(dot, label).arrange(RIGHT, buff=0.12)
 
     def top_left_tag(self, text: str, color: str = ACCENT) -> VGroup:

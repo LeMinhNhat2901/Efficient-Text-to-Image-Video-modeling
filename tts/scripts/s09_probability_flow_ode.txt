@@ -1,0 +1,55 @@
+To understand continuous diffusion, imagine a thin layer of oil floating on a slow stream.
+
+Its motion has two separate components.
+
+On the left side, we have drift.
+
+Drift is deterministic.
+
+The water current pushes the oil particles along a velocity field.
+
+If the current curves, the particles curve.
+
+If the current compresses, probability mass accumulates.
+
+If it expands, probability spreads out.
+
+Mathematically, drift looks like:
+
+d X equals alpha of x and t, times d t.
+
+On the right side, we have pure diffusion.
+
+Even if the water is still, the oil particles do not stay perfectly fixed.
+
+Random microscopic motion makes them spread.
+
+They jitter, collide, and gradually move outward.
+
+This random part is written as:
+
+d X equals square root beta of t, times d W.
+
+Now we merge the two halves.
+
+The particles are carried by the flow, but also shaken by randomness.
+
+Together, they form an Ito process:
+
+d X equals alpha of x and t times d t,
+
+plus square root beta of t times d W.
+
+This is a compact way to say:
+
+part deterministic motion,
+
+part random diffusion,
+
+all happening continuously in time.
+
+It is like a river with a little statistical caffeine added.
+
+And now the big question becomes:
+
+If individual particles follow this process, how does the entire probability density move?

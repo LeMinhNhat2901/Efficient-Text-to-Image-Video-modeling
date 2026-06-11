@@ -1,0 +1,61 @@
+Now let us look more carefully at the forward equation.
+
+There is a very important property hiding inside it.
+
+To produce X t, we only use X t minus one.
+
+We do not directly look at X t minus two, or X zero, or the entire history of the system.
+
+It is like a robot walking through a foggy maze with extremely short-term memory.
+
+At each step, the robot only says: "Where am I now?
+
+Great.
+
+Let me move from here." It does not open a full autobiography of every previous step.
+
+That would be dramatic, but unnecessary.
+
+This is the Markov property.
+
+It says:
+
+Once we know the current state,
+
+the distant past does not provide additional direct information about the next state.
+
+More formally:
+
+p of x t, given x zero through x t minus one,
+
+equals p of x t, given x t minus one.
+
+This does not mean the past is irrelevant in a philosophical sense.
+
+The past helped create x t minus one.
+
+But once x t minus one is known, that state already summarizes everything the process needs for the next step.
+
+In the animation, all older nodes fade away.
+
+A wall falls between the distant past and the present.
+
+Only the arrow from x t minus one to x t remains bright.
+
+This simple idea gives us a powerful factorization.
+
+The probability of the entire trajectory can be written as:
+
+p of x zero to T,
+
+equals p of x zero,
+
+times the product from t equals one to T,
+
+of p of x t given x t minus one.
+
+Instead of modeling one enormous transformation from clean data to pure noise, we model many small transitions.
+
+And that is exactly why diffusion models are trainable.
+
+They turn one impossible leap into a long sequence of tiny, manageable steps.

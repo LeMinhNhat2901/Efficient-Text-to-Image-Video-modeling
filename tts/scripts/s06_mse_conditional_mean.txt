@@ -1,0 +1,75 @@
+Instead of explicitly computing the score everywhere, we train a neural network to solve a denoising problem.
+
+Here is the statistical miracle.
+
+Suppose we know a noisy observation y.
+
+There may be many possible cleaner states x that could have produced it.
+
+If the model must output one single prediction, what should it choose?
+
+Let us visualize the possibilities as points.
+
+Each possible x pulls on the prediction.
+
+If the prediction is too far left, many distances become large.
+
+If it is too far right, same problem.
+
+The best compromise is the center of mass of all possible x's conditioned on y.
+
+That center is:
+
+the expected value of X, given Y equals y.
+
+Now we turn this into training.
+
+We define a squared error loss:
+
+L of f theta,
+
+equals the expected squared distance between f theta of y and x.
+
+This is ordinary mean squared error.
+
+Nothing fancy.
+
+The kind of loss function that has been quietly doing homework since the early days of machine learning.
+
+But the theorem says something powerful:
+
+The function that minimizes this expected squared error is:
+
+f star of y equals the expected value of X, given Y equals y.
+
+So MSE does not just make predictions "close." Under ideal conditions, it learns the conditional mean.
+
+In the animation, the balance beam finds its center.
+
+Then it morphs into a parabola.
+
+A ball rolls down to the minimum.
+
+At the bottom, the formula appears:
+
+f star of y equals the expected value of X, given Y equals y.
+
+In diffusion, this becomes the learned backward mean:
+
+mu theta of y and t.
+
+This is very important.
+
+We are not saying the neural network becomes perfect.
+
+In practice, it learns an approximation.
+
+The score compass is estimated, not magically downloaded from the universe.
+
+But this approximation is enough.
+
+Instead of computing the impossible probability density directly, the network learns how to denoise.
+
+And by learning to denoise, it learns the direction back toward structure.
+
+So the compass gets absorbed into the neural network.
