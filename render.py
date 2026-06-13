@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 
-SCENES = [
+VIDEO1_SCENES = [
     ("scenes/s00_roadmap.py", "RoadmapOverview"),
     ("scenes/s01_forward_ou_wiener.py", "ForwardOUWiener"),
     ("scenes/s02_markov.py", "MarkovChainScene"),
@@ -22,6 +22,27 @@ SCENES = [
     ("scenes/s12_runge_kutta_solver.py", "RungeKuttaSolverScene"),
     ("scenes/s13_finale_failure.py", "FinaleFailureScene"),
 ]
+
+VIDEO2_SCENES = [
+    ("scenes/v02_s00_text_pixels_opening.py", "V02TextPixelsOpening"),
+    ("scenes/v02_s01_generative_backbones.py", "V02GenerativeBackbones"),
+    ("scenes/v02_s02_clip_coembedding.py", "V02ClipCoEmbedding"),
+    ("scenes/v02_s03_vqgan_visual_words.py", "V02VqganVisualWords"),
+    ("scenes/v02_s04_architecture_evolution.py", "V02ArchitectureEvolution"),
+    ("scenes/v02_s05_muse_markovgen.py", "V02MuseMarkovgen"),
+    ("scenes/v02_s06_diffusion_intuition.py", "V02DiffusionIntuition"),
+    ("scenes/v02_s07_diffusion_math.py", "V02DiffusionMath"),
+    ("scenes/v02_s08_guidance.py", "V02Guidance"),
+    ("scenes/v02_s09_latent_diffusion_crf.py", "V02LatentDiffusionCRF"),
+    ("scenes/v02_s10_sana_var.py", "V02SanaVar"),
+    ("scenes/v02_s11_discussion_finale.py", "V02DiscussionFinale"),
+]
+
+SCENE_GROUPS = {
+    "1": VIDEO1_SCENES,
+    "2": VIDEO2_SCENES,
+    "all": VIDEO1_SCENES + VIDEO2_SCENES,
+}
 
 QUALITY_DIRS = {
     "-ql": "480p15",
@@ -44,12 +65,24 @@ AUDIO_SCENES = {
     "ReverseDistributionScene": ("s11", Path("tts") / "outputs" / "s11_reverse_distribution.wav"),
     "RungeKuttaSolverScene": ("s12", Path("tts") / "outputs" / "s12_runge_kutta_solver.wav"),
     "FinaleFailureScene": ("s13", Path("tts") / "outputs" / "s13_finale_failure.wav"),
+    "V02TextPixelsOpening": ("v02_s00", Path("tts") / "outputs" / "v02_s00_text_pixels_opening.wav"),
+    "V02GenerativeBackbones": ("v02_s01", Path("tts") / "outputs" / "v02_s01_generative_backbones.wav"),
+    "V02ClipCoEmbedding": ("v02_s02", Path("tts") / "outputs" / "v02_s02_clip_coembedding.wav"),
+    "V02VqganVisualWords": ("v02_s03", Path("tts") / "outputs" / "v02_s03_vqgan_visual_words.wav"),
+    "V02ArchitectureEvolution": ("v02_s04", Path("tts") / "outputs" / "v02_s04_architecture_evolution.wav"),
+    "V02MuseMarkovgen": ("v02_s05", Path("tts") / "outputs" / "v02_s05_muse_markovgen.wav"),
+    "V02DiffusionIntuition": ("v02_s06", Path("tts") / "outputs" / "v02_s06_diffusion_intuition.wav"),
+    "V02DiffusionMath": ("v02_s07", Path("tts") / "outputs" / "v02_s07_diffusion_math.wav"),
+    "V02Guidance": ("v02_s08", Path("tts") / "outputs" / "v02_s08_guidance.wav"),
+    "V02LatentDiffusionCRF": ("v02_s09", Path("tts") / "outputs" / "v02_s09_latent_diffusion_crf.wav"),
+    "V02SanaVar": ("v02_s10", Path("tts") / "outputs" / "v02_s10_sana_var.wav"),
+    "V02DiscussionFinale": ("v02_s11", Path("tts") / "outputs" / "v02_s11_discussion_finale.wav"),
 }
 
 
 def main() -> None:
     project_root = Path(__file__).resolve().parent
-    parser = argparse.ArgumentParser(description="Render prototype diffusion Manim scenes.")
+    parser = argparse.ArgumentParser(description="Render Manim scenes for the video series.")
     quality_group = parser.add_mutually_exclusive_group()
     quality_group.add_argument("-ql", dest="quality_flag", action="store_const", const="-ql", help="Low quality preview.")
     quality_group.add_argument("-qm", dest="quality_flag", action="store_const", const="-qm", help="Medium quality check.")
@@ -61,6 +94,12 @@ def main() -> None:
     )
     parser.add_argument("--disable-caching", action="store_true", help="Pass Manim's --disable_caching flag.")
     parser.add_argument("--scene", help="Render one scene class by name.")
+    parser.add_argument(
+        "--video",
+        choices=["1", "2", "all"],
+        default="1",
+        help="Render all scenes for a video. Ignored when --scene is supplied.",
+    )
     args = parser.parse_args()
     quality_map = {
         None: "-ql",
@@ -73,9 +112,10 @@ def main() -> None:
     }
     quality_flag = args.quality_flag or quality_map[args.quality]
 
-    selected = [item for item in SCENES if args.scene in (None, item[1])]
+    scene_pool = SCENE_GROUPS["all"] if args.scene else SCENE_GROUPS[args.video]
+    selected = [item for item in scene_pool if args.scene in (None, item[1])]
     if not selected:
-        names = ", ".join(name for _, name in SCENES)
+        names = ", ".join(name for _, name in SCENE_GROUPS["all"])
         raise SystemExit(f"Unknown scene. Available: {names}")
 
     for file_name, scene_name in selected:

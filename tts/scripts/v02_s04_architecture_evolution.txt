@@ -1,0 +1,12 @@
+Khi ảnh đã trở thành token, câu hỏi tiếp theo là: mô hình nào sẽ học quan hệ giữa các token đó?
+Lịch sử thị giác máy tính có thể được nhìn như một quá trình mở rộng phạm vi tương tác.
+Ở giai đoạn đầu, Markov Random Fields mô hình hóa quan hệ cục bộ. Mỗi biến trong lưới chỉ tương tác với các láng giềng gần nó. Ta tối ưu một hàm năng lượng gồm unary cost và pairwise cost.
+Sau đó, CNN trở thành công cụ chủ đạo. CNN rất giỏi trong việc trích xuất đặc trưng cục bộ theo tầng: cạnh, texture, bộ phận vật thể, rồi cấu trúc lớn hơn.
+Nhưng ảnh không chỉ có quan hệ cục bộ. Một vùng ở góc trái có thể phụ thuộc vào ánh sáng, bố cục, hoặc vật thể ở rất xa. Đây là nơi Transformers trở nên quan trọng. Với attention, một token có thể tương tác trực tiếp với một token khác ở rất xa trong ảnh.
+Vision Transformer cắt ảnh thành patch, biến mỗi patch thành token, thêm positional embedding, rồi đưa toàn bộ chuỗi vào Transformer Encoder.
+Khi kết hợp với VQGAN, ta có một ý tưởng rất mạnh: dùng encoder, decoder và codebook để biến image synthesis thành sequence prediction. Transformer có thể sinh token image, và nếu có conditional input như text, depth map, semantic map, edge map hoặc low-resolution image, nó có thể sinh ảnh theo điều kiện đó.
+Nhưng có một rào cản quan trọng: ordering.
+Trong ngôn ngữ, thứ tự gần như tự nhiên. Ta đọc từ trái sang phải. Từ trước cung cấp ngữ cảnh cho từ sau.
+Còn ảnh là một cấu trúc 2D. Không có một thứ tự duy nhất nào là hiển nhiên. Nếu ta muốn sinh ảnh tự hồi quy, ta phải ép lưới 2D thành một chuỗi 1D.
+Ta có thể quét theo hàng ngang. Ta có thể quét xoắn ốc. Ta có thể shuffle, random, hoặc dùng các cách xen kẽ khác. Nhưng mỗi cách đều áp đặt một bias khác nhau lên hình ảnh.
+Đó là lý do image generation bằng token không chỉ là ‘GPT cho ảnh’. Hình ảnh có cấu trúc không gian riêng, và thứ tự sinh token có thể ảnh hưởng trực tiếp đến hiệu quả huấn luyện, tốc độ suy luận và chất lượng ảnh.

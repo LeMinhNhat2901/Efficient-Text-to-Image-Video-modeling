@@ -88,6 +88,18 @@ def default_video(scene: str, quality_dir: str) -> Path:
         "s11": ("s11_reverse_distribution", "ReverseDistributionScene"),
         "s12": ("s12_runge_kutta_solver", "RungeKuttaSolverScene"),
         "s13": ("s13_finale_failure", "FinaleFailureScene"),
+        "v02_s00": ("v02_s00_text_pixels_opening", "V02TextPixelsOpening"),
+        "v02_s01": ("v02_s01_generative_backbones", "V02GenerativeBackbones"),
+        "v02_s02": ("v02_s02_clip_coembedding", "V02ClipCoEmbedding"),
+        "v02_s03": ("v02_s03_vqgan_visual_words", "V02VqganVisualWords"),
+        "v02_s04": ("v02_s04_architecture_evolution", "V02ArchitectureEvolution"),
+        "v02_s05": ("v02_s05_muse_markovgen", "V02MuseMarkovgen"),
+        "v02_s06": ("v02_s06_diffusion_intuition", "V02DiffusionIntuition"),
+        "v02_s07": ("v02_s07_diffusion_math", "V02DiffusionMath"),
+        "v02_s08": ("v02_s08_guidance", "V02Guidance"),
+        "v02_s09": ("v02_s09_latent_diffusion_crf", "V02LatentDiffusionCRF"),
+        "v02_s10": ("v02_s10_sana_var", "V02SanaVar"),
+        "v02_s11": ("v02_s11_discussion_finale", "V02DiscussionFinale"),
     }
     if scene not in scene_map:
         raise ValueError(f"No default path configured for scene {scene!r}. Pass --video explicitly.")
@@ -111,6 +123,18 @@ def default_audio(scene: str) -> Path:
         "s11": ROOT / "tts" / "outputs" / "s11_reverse_distribution.wav",
         "s12": ROOT / "tts" / "outputs" / "s12_runge_kutta_solver.wav",
         "s13": ROOT / "tts" / "outputs" / "s13_finale_failure.wav",
+        "v02_s00": ROOT / "tts" / "outputs" / "v02_s00_text_pixels_opening.wav",
+        "v02_s01": ROOT / "tts" / "outputs" / "v02_s01_generative_backbones.wav",
+        "v02_s02": ROOT / "tts" / "outputs" / "v02_s02_clip_coembedding.wav",
+        "v02_s03": ROOT / "tts" / "outputs" / "v02_s03_vqgan_visual_words.wav",
+        "v02_s04": ROOT / "tts" / "outputs" / "v02_s04_architecture_evolution.wav",
+        "v02_s05": ROOT / "tts" / "outputs" / "v02_s05_muse_markovgen.wav",
+        "v02_s06": ROOT / "tts" / "outputs" / "v02_s06_diffusion_intuition.wav",
+        "v02_s07": ROOT / "tts" / "outputs" / "v02_s07_diffusion_math.wav",
+        "v02_s08": ROOT / "tts" / "outputs" / "v02_s08_guidance.wav",
+        "v02_s09": ROOT / "tts" / "outputs" / "v02_s09_latent_diffusion_crf.wav",
+        "v02_s10": ROOT / "tts" / "outputs" / "v02_s10_sana_var.wav",
+        "v02_s11": ROOT / "tts" / "outputs" / "v02_s11_discussion_finale.wav",
     }
     if scene not in audio_map:
         raise ValueError(f"No default audio configured for scene {scene!r}. Pass --audio explicitly.")

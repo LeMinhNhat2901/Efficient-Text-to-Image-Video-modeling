@@ -1,0 +1,49 @@
+Diffusion da cho ta mot cach rat manh de bien noise thanh anh.
+Nhung co mot van de thuc te: pixel space qua lon.
+
+Mot anh 1024 x 1024 voi 3 kenh mau da co hon ba trieu gia tri.
+Neu moi buoc denoising deu xu ly toan bo khong gian nay, mo hinh giong nhu mot hoa si phai ve bich hoa bang cay co sieu nho.
+Dep thi co dep, nhung GPU thi kho chiu.
+
+Latent Diffusion dua ra mot cu hack rat thong minh: dung lam diffusion truc tiep tren pixel.
+
+Truoc tien, ta dung mot Encoder de nen anh vao mot latent space nho hon.
+Latent nay khong con la anh day du theo nghia pixel, nhung no giu lai cau truc quan trong: bo cuc, hinh dang, texture, va thong tin ngu nghia.
+
+Toan bo qua trinh them nhieu va khu nhieu gio dien ra tren latent z, khong phai anh pixel x.
+Vi khong gian nay nho hon rat nhieu, moi buoc denoising re hon, nhanh hon, va kha thi hon cho anh do phan giai cao.
+
+Van ban, semantic map, anh tham chieu, hoac cac representation khac co the di vao mo hinh nhu dieu kien.
+Trong LDM, cross-attention la co che quan trong giup thong tin tu prompt tuong tac voi latent dang duoc khu nhieu.
+
+Khi denoising trong latent space hoan tat, Decoder giai ma latent tro lai thanh anh pixel.
+Noi ngan gon: LDM khong mo truc tiep bang pixel.
+No mo trong ban nhap nen, roi giai ma giac mo do thanh anh.
+
+Nhung voi ky su, nhanh hon van chua du nhanh.
+
+LatentCRF hoi mot cau rat thuc dung:
+neu nhieu buoc denoising chi dang tinh chinh latent cho giong phan phoi anh tu nhien hon,
+lieu ta co the thay mot so buoc do bang mot phep suy luan nhe hon khong?
+
+Y tuong la dung CRF inference truc tiep tren latent vectors.
+Cac latent khong doc lap.
+Mot latent vector nen tuong thich voi cac latent lan can, va doi khi ca mot nhom latent cung tao nen cau truc lon hon.
+
+Pairwise interactions giup mo hinh kiem tra su nhat quan cuc bo.
+Cac latent gan nhau co hop ly khong?
+
+Higher-order interactions di xa hon:
+khong chi hai diem, ma ca mot cum latent cung nhau phai phu hop voi cau truc tu nhien cua anh.
+
+Ket qua tren slide cho thay LatentCRF co the chay nhanh hon khoang 33 phan tram so voi Full LDM,
+trong khi chat luong hinh anh van rat gan nhau tren cac vi du nhu hoa mau don, xe Porsche, formal raccoon, va chan dung meo.
+
+Diem quan trong khong chi la con so tang toc.
+Diem quan trong la mo hinh dang tan dung cau truc cua latent space,
+thay vi chi lap U-Net mot cach may moc.
+
+Latent space giup diffusion nhe hon.
+LatentCRF giup inference co duong tat hon.
+Nhung cuoc dua tang toc chua dung lai.
+Nhung kien truc moi bat dau thay doi ca dong co ben trong.

@@ -1,0 +1,42 @@
+Truc giac diffusion rat don gian: them noise roi hoc cach loai bo noise.
+Nhung de cai dat duoc no, ta can viet qua trinh nay thanh toan hoc.
+
+Forward diffusion la mot Markov chain.
+Ta bat dau voi anh sach x_0, lay tu phan phoi du lieu.
+Sau do tao x_1, x_2, cho den x_T, bang cach them Gaussian noise tung buoc.
+
+O moi buoc, cong thuc chuyen tiep co hai phan.
+Phan thu nhat, square root of one minus beta_t times x_{t-1}, lam tin hieu goc yeu di mot chut.
+Phan thu hai, beta_t I, them noise moi vao anh.
+
+Beta_t la noise schedule.
+No quyet dinh luong noise duoc them vao tai moi timestep.
+Nhung buoc dau thuong pha huy anh rat nhe.
+Cang ve sau, noise chiem uu the hon, cho den khi cau truc anh gan nhu bien mat.
+
+Mot cach hinh hoc, mean cua phan phoi bi keo dan ve zero, con noise ngay cang thong tri.
+Neu tong luong noise du lon, x_T se gan voi Gaussian chuan N zero I.
+
+Nhung trong training, ta khong muon phai chay hang tram buoc forward chi de tao mot anh nhieu o thoi diem t.
+Day la noi toan hoc cho ta mot shortcut rat dep.
+
+Dat alpha_t bang one minus beta_t, va alpha_bar_t la tich cua cac alpha tu buoc mot den buoc t.
+Khi do, ta co the lay mau x_t truc tiep tu x_0.
+
+Noi cach khac, thay vi di tung buoc tu x_0 den x_t, ta co the nhay thang den timestep t bang cong thuc:
+x_t equals square root alpha_bar_t times x_0 plus square root one minus alpha_bar_t times epsilon.
+
+Day la cu nhay thoi gian giup training tro nen hieu qua.
+
+Loss function cung rat gon.
+Ta dua x_t va timestep t vao mang epsilon_theta, roi yeu cau mang du doan noise epsilon da duoc dung de tao x_t.
+Loss la binh phuong sai so giua noise that va noise du doan.
+
+Pseudocode training vi vay co the doc nhu mot cong thuc lap:
+lay anh, chon timestep, sinh noise, tao anh nhieu, roi cap nhat mang de du doan noise.
+
+Sampling thi di nguoc lai.
+Bat dau tu x_T lay tu N zero I, roi lap tu T ve one.
+O moi buoc, model du doan noise va ta thuc hien mot reverse step de lam anh sach hon.
+
+Den cuoi vong lap, thu tung la pure noise tro thanh mot anh co cau truc.

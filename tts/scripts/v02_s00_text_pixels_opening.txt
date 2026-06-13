@@ -1,0 +1,7 @@
+Welcome back to our journey through generative artificial intelligence.
+
+In the previous part, through Richard Hartley's lecture, we looked deeply into the mathematics of diffusion models. But today, we take one step back.
+
+Instead of focusing on one equation or one model, we look at the full map.
+
+Based on Srikumar Ramalingam's talk from Google Research, this chapter is about the cornerstones of the Text-to-Pixels journey: the key ideas that allow modern systems to turn language into structured, colorful, meaningful images.

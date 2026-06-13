@@ -1,0 +1,13 @@
+Ở phần trước, chúng ta đã có một không gian nhúng chung, nơi văn bản và hình ảnh có thể gặp nhau. Nhưng để sinh ra một bức ảnh mới, ta cần một bước khác: biến ảnh thành một dạng mà mô hình có thể viết ra được.
+Các mô hình ngôn ngữ như GPT sinh câu bằng cách dự đoán token. Vậy tại sao ta không làm điều tương tự với hình ảnh?
+Vấn đề là ảnh không phải một chuỗi từ có sẵn. Ảnh là một trường pixel liên tục, có thể chứa hàng trăm nghìn hoặc hàng triệu giá trị. Dự đoán từng pixel trực tiếp vừa tốn kém, vừa khó học được cấu trúc ngữ nghĩa.
+Ý tưởng visual words đưa ra một cách nhìn khác. Thay vì nhìn từng pixel, ta nhìn các vùng nhỏ của ảnh. Một mảnh mắt, một phần mũi, một cạnh xe, một vùng texture — mỗi mảnh đều chứa thông tin quan trọng về vật thể.
+Nếu ta gom các patch này trong feature space, các mẫu hình tương tự sẽ tụ lại thành cụm. Tâm của mỗi cụm có thể xem như một prototype word — một từ vựng thị giác nguyên mẫu. Khi một vùng ảnh mới xuất hiện, ta chỉ cần tìm prototype gần nhất và gán nó vào từ tương ứng.
+Đây là cầu nối giữa image search và image generation. Nếu ta có thể mô tả ảnh bằng một tập visual words đủ tốt, ta đã tiến gần hơn đến việc tái tạo hoặc sinh ra ảnh đó.
+VQGAN đưa ý tưởng này vào một kiến trúc mạnh hơn. Một ảnh 256×256×3 được đưa qua CNN Encoder, nén thành một lưới đặc trưng nhỏ hơn. Tại mỗi vị trí trong lưới, mô hình tìm vector gần nhất trong codebook. Kết quả là một token image — một ma trận gồm các chỉ số rời rạc.
+Nói cách khác, ảnh đã được dịch từ thế giới pixel liên tục sang thế giới token rời rạc.
+Điểm quan trọng của VQGAN là sự kết hợp giữa CNN và Transformer. CNN học các visual parts giàu ngữ cảnh ở mức cục bộ. Transformer học quan hệ tầm xa giữa các phần ảnh. Vì vậy, VQGAN trở thành một backbone hiệu quả cho nhiều hệ thống sinh ảnh có điều kiện như latent diffusion, Muse, Parti hoặc Paella.
+Quá trình huấn luyện thường có hai giai đoạn. Giai đoạn một học encoder, decoder và codebook. Giai đoạn hai học Transformer để tổng hợp ảnh từ các token, có thể kèm điều kiện như văn bản, depth map, edge map hoặc semantic map.
+Để codebook hoạt động tốt, loss function phải làm nhiều việc cùng lúc. Reconstruction loss đảm bảo ảnh giải mã giống ảnh gốc. Các L2 loss kéo encoder output và codebook entries lại gần nhau, để quá trình lượng tử hóa ổn định. Và để ảnh tái tạo không bị mờ, VQGAN còn dùng perceptual loss và GAN loss, nơi Discriminator đóng vai trò như một giám khảo thị giác.
+Kết quả cuối cùng là một bước ngoặt: ảnh không còn chỉ là pixel. Ảnh đã trở thành token.
+Và khi ảnh đã trở thành token, ta có thể đưa nó vào cỗ máy đã thay đổi toàn bộ xử lý ngôn ngữ hiện đại: Transformers.

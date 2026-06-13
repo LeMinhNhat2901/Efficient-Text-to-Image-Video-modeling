@@ -1,0 +1,23 @@
+The rise of text-to-image generation was not a single invention. It was a puzzle assembled across years: U-Net and diffusion in 2015, Transformers in 2017, CLIP around 2020, and then VQGAN, DALL-E, and latent diffusion models around 2021.
+
+Before connecting images to text, vision models already learned something powerful: images with similar objects, or similar semantic structure, tend to live close to each other in feature space.
+
+But image features alone are not enough. Text still lives in another world. A sentence like "autonomous car" is not an image. It must be mapped into the same space.
+
+CLIP and ALIGN solve this by building an image-text co-embedding space. An image encoder maps images into vectors. A text encoder maps text into vectors. The training objective makes matching image-text pairs close, and mismatched pairs far apart.
+
+In a single-tower classifier, the model maps an image into one of a fixed set of labels, like ImageNet classes. This is powerful, but limited.
+
+Two-tower models change the game. One tower encodes images. The other encodes language. Instead of being locked into a fixed label set, the model can compare images with arbitrary text descriptions. This is the foundation of zero-shot classification and open-vocabulary recognition.
+
+The mathematical engine behind this alignment is contrastive learning, often implemented with an InfoNCE-style loss.
+
+Inside each batch, the model compares every image with every text. The correct pairs lie on the diagonal of the similarity matrix. Training pushes these diagonal scores up, while pushing all mismatched pairs down.
+
+Over many batches, language becomes a coordinate system for vision.
+
+At this point, text is no longer just a string of characters. It becomes an address in visual space. The prompt does not yet generate pixels, but it tells the system where in the visual world those pixels should belong.
+
+But alignment is only the first step. Before a model can generate an image, it must answer another question: how should an image be represented so that a machine can write it out?
+
+This brings us to visual words and image tokenization.
