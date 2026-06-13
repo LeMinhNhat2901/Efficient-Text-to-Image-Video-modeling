@@ -38,10 +38,36 @@ VIDEO2_SCENES = [
     ("scenes/video_02/s11_discussion_finale.py", "V02DiscussionFinale"),
 ]
 
+VIDEO3_SCENES = [
+    ("scenes/video_03/scene3_1.py", "Scene3_1"),
+    ("scenes/video_03/scene3_1_plus.py", "Scene3_1_Plus"),
+    ("scenes/video_03/scene3_2.py", "Scene3_2"),
+    ("scenes/video_03/scene3_3.py", "Scene3_3"),
+    ("scenes/video_03/scene3_4.py", "Scene3_4"),
+    ("scenes/video_03/scene3_5.py", "Scene3_5"),
+    ("scenes/video_03/scene3_6.py", "Scene3_6"),
+    ("scenes/video_03/scene3_7.py", "Scene3_7"),
+    ("scenes/video_03/scene3_8.py", "Scene3_8"),
+]
+
+VIDEO4_SCENES = [
+    ("scenes/video_04/scene4_1.py", "Scene4_1"),
+    ("scenes/video_04/scene4_2.py", "Scene4_2"),
+    ("scenes/video_04/scene4_3.py", "Scene4_3"),
+    ("scenes/video_04/scene4_4.py", "Scene4_4"),
+    ("scenes/video_04/scene4_5.py", "Scene4_5"),
+    ("scenes/video_04/scene4_6.py", "Scene4_6"),
+    ("scenes/video_04/scene4_7.py", "Scene4_7"),
+    ("scenes/video_04/scene4_8.py", "Scene4_8"),
+    ("scenes/video_04/scene4_9.py", "Scene4_9"),
+]
+
 SCENE_GROUPS = {
     "1": VIDEO1_SCENES,
     "2": VIDEO2_SCENES,
-    "all": VIDEO1_SCENES + VIDEO2_SCENES,
+    "3": VIDEO3_SCENES,
+    "4": VIDEO4_SCENES,
+    "all": VIDEO1_SCENES + VIDEO2_SCENES + VIDEO3_SCENES + VIDEO4_SCENES,
 }
 
 QUALITY_DIRS = {
@@ -96,7 +122,7 @@ def main() -> None:
     parser.add_argument("--scene", help="Render one scene class by name.")
     parser.add_argument(
         "--video",
-        choices=["1", "2", "all"],
+        choices=["1", "2", "3", "4", "all"],
         default="1",
         help="Render all scenes for a video. Ignored when --scene is supplied.",
     )
@@ -122,7 +148,16 @@ def main() -> None:
         cmd = [sys.executable, "-m", "manim", quality_flag, file_name, scene_name]
         if args.disable_caching:
             cmd.insert(4, "--disable_caching")
-        media_dir = "media/video_01" if "video_01" in file_name else "media/video_02"
+        if "video_01" in file_name:
+            media_dir = "media/video_01"
+        elif "video_02" in file_name:
+            media_dir = "media/video_02"
+        elif "video_03" in file_name:
+            media_dir = "media/video_03"
+        elif "video_04" in file_name:
+            media_dir = "media/video_04"
+        else:
+            media_dir = "media"
         cmd.extend(["--media_dir", media_dir])
         print(" ".join(cmd))
         subprocess.run(cmd, check=True, cwd=project_root)
