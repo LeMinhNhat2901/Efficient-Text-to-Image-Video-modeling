@@ -89,7 +89,7 @@ place and continues.
 
 ## Preview
 
-After rendering all low-quality scenes, stitch a full preview:
+After rendering all low-quality scenes, stitch a full preview (Video 1 only):
 
 ```powershell
 python scripts/concat_preview.py
@@ -100,6 +100,16 @@ The preview is written locally under:
 ```text
 media/videos/preview_480p15/DiffusionPrototypePreview.mp4
 ```
+
+## Stitch Full Videos
+
+To concatenate all rendered scenes of a specific video (e.g., Video 3) into a single, complete video file with audio:
+
+```powershell
+python scripts/stitch_video.py --video 3 -qm --output Tutorial_Part3.mp4
+```
+
+This uses `ffmpeg` to securely copy and concatenate the streams without re-encoding, generating the final stitched video in the project root.
 
 `media/` is ignored by git because it contains generated render output and
 Manim cache files.
