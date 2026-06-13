@@ -6,22 +6,22 @@ import numpy as np
 from PIL import Image, ImageOps
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 ASSET_NAMES = ("puppy.jpg", "puppy.png", "puppy.jpeg")
-OUT_DIR = ROOT / "assets" / "generated" / "noise_frames"
+OUT_DIR = ROOT / "assets" / "video_01" / "generated" / "noise_frames"
 FRAME_PREFIX = "puppy_noise"
 NOISE_LEVELS = tuple(np.linspace(0.0, 1.0, 13))
 FRAME_SIZE = (720, 508)
 
 
 def find_source_image() -> Path:
-    assets_dir = ROOT / "assets"
+    assets_dir = ROOT / "assets" / "video_01"
     for name in ASSET_NAMES:
         candidate = assets_dir / name
         if candidate.exists():
             return candidate
     raise FileNotFoundError(
-        "No puppy source image found. Put puppy.jpg, puppy.png, or puppy.jpeg in assets/."
+        "No puppy source image found. Put puppy.jpg, puppy.png, or puppy.jpeg in assets/video_01/."
     )
 
 

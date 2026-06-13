@@ -26,8 +26,8 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-ROOT = Path(__file__).resolve().parents[1]
-OUT_DIR = ROOT / "assets" / "generated_40_56"
+ROOT = Path(__file__).resolve().parents[2]
+OUT_DIR = ROOT / "assets" / "video_02" / "generated" / "40_56"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 W, H = 256, 256          # output resolution
@@ -194,7 +194,7 @@ def make_feline_portrait(seed: int, primary: tuple, secondary: tuple) -> np.ndar
 
 
 def generate_guidance_outputs() -> None:
-    out_ext = ROOT / "assets" / "external_40_56"
+    out_ext = ROOT / "assets" / "video_02" / "external" / "40_56"
     out_ext.mkdir(parents=True, exist_ok=True)
 
     felines = [
@@ -205,7 +205,7 @@ def generate_guidance_outputs() -> None:
     for fname, seed, primary, secondary in felines:
         img = make_feline_portrait(seed, primary, secondary)
         Image.fromarray(img).save(out_ext / fname)
-        print(f"  saved external_40_56/{fname}")
+        print(f"  saved video_02/external/40_56/{fname}")
 
     # Cyberpunk cat
     cyber = make_feline_portrait(77, (60, 40, 120), (0, 230, 200))
@@ -217,7 +217,7 @@ def generate_guidance_outputs() -> None:
                     cyber[y, x].astype(int) + np.array([0, 60, 80]), 0, 255
                 ).astype(np.uint8)
     Image.fromarray(cyber).save(out_ext / "cyberpunk_cat.jpg")
-    print("  saved external_40_56/cyberpunk_cat.jpg")
+    print("  saved video_02/external/40_56/cyberpunk_cat.jpg")
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -240,7 +240,7 @@ def main() -> None:
     print("\n[4] Guidance output portraits (tabby / lion / leopard / cyberpunk):")
     generate_guidance_outputs()
 
-    print(f"\nAll assets written to:\n  {OUT_DIR}\n  {ROOT / 'assets' / 'external_40_56'}")
+    print(f"\nAll assets written to:\n  {OUT_DIR}\n  {ROOT / 'assets' / 'video_02' / 'external' / '40_56'}")
     print("\nDone!")
 
 

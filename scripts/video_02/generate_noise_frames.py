@@ -7,7 +7,7 @@ side of the two-backbone comparison (v02_s01_generative_backbones.py).
 Each frame is a small square filled with Gaussian noise blended with
 a clean coloured target at different signal-to-noise ratios.
 
-Output: assets/generated/diffusion_frames/
+Output: assets/video_02/generated/diffusion_frames/
   diffuse_00.png  (pure noise)
   diffuse_25.png  (heavy noise)
   diffuse_50.png  (medium noise)
@@ -26,7 +26,7 @@ import numpy as np
 from PIL import Image
 
 
-OUTPUT_DIR = Path(__file__).resolve().parents[1] / "assets" / "generated" / "diffusion_frames"
+OUTPUT_DIR = Path(__file__).resolve().parents[2] / "assets" / "video_02" / "generated" / "diffusion_frames"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 SIZE = 256            # pixels per side

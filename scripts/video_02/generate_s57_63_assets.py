@@ -7,10 +7,10 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
 
-ROOT = Path(__file__).resolve().parents[1]
-EXTERNAL = ROOT / "assets" / "external_57_63"
-GENERATED = ROOT / "assets" / "generated_57_63"
-ICONS = ROOT / "assets" / "icons"
+ROOT = Path(__file__).resolve().parents[2]
+EXTERNAL = ROOT / "assets" / "video_02" / "external" / "57_63"
+GENERATED = ROOT / "assets" / "video_02" / "generated" / "57_63"
+ICONS = ROOT / "assets" / "common" / "icons"
 
 for folder in (EXTERNAL, GENERATED, ICONS):
     folder.mkdir(parents=True, exist_ok=True)
@@ -111,7 +111,7 @@ def make_cat() -> Image.Image:
 
 
 def make_cyber_cat() -> Image.Image:
-    fallback = ROOT / "assets" / "external_40_56" / "cyberpunk_cat.jpg"
+    fallback = ROOT / "assets" / "video_02" / "external" / "40_56" / "cyberpunk_cat.jpg"
     if fallback.exists():
         return Image.open(fallback).convert("RGB").resize((W, H))
     img = make_cat()
