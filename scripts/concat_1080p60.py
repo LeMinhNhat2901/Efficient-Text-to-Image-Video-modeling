@@ -86,7 +86,8 @@ GAP_SECONDS_DEFAULT = 0.5  # black gap between scenes (seconds)
 # ──────────────────────────────────────────────────────────────────────────────
 
 def _scene_path(folder: str, filename: str) -> Path:
-    return ROOT / "media" / "videos" / folder / QUALITY / f"{filename}.mp4"
+    video_dir = "video_02" if any(folder == f for f, _ in VIDEO2_SCENES) else "video_01"
+    return ROOT / "media" / video_dir / "videos" / folder / QUALITY / f"{filename}.mp4"
 
 
 def _resolve_scenes(video: str) -> list[Path]:
@@ -102,11 +103,13 @@ def _resolve_scenes(video: str) -> list[Path]:
 def _default_output(video: str) -> Path:
     if video == "1":
         name = "Video1_DiffusionPrototype_1080p60.mp4"
+        out_dir = ROOT / "media" / "video_01" / "videos" / "full_1080p60"
     elif video == "2":
         name = "Video2_TextToPixels_1080p60.mp4"
+        out_dir = ROOT / "media" / "video_02" / "videos" / "full_1080p60"
     else:
         name = "FullVideo_1080p60.mp4"
-    out_dir = ROOT / "media" / "videos" / "full_1080p60"
+        out_dir = ROOT / "media" / "videos" / "full_1080p60"
     out_dir.mkdir(parents=True, exist_ok=True)
     return out_dir / name
 
@@ -316,7 +319,7 @@ def main() -> None:
             print(f"  {m}")
         raise SystemExit(1)
 
-    print(f"Concatenating {len(scenes)} scene(s) → {out_path}")
+    print(f"Concatenating {len(scenes)} scene(s) -> {out_path}")
     print(f"Gap between scenes: {gap_seconds}s  |  Quality: {QUALITY}  |  FPS: {FPS}")
 
     ffmpeg = _find_ffmpeg()
@@ -325,7 +328,7 @@ def main() -> None:
             _concat_with_ffmpeg(ffmpeg, scenes, out_path, gap_seconds)
             method = f"ffmpeg ({ffmpeg})"
         except (OSError, subprocess.CalledProcessError) as exc:
-            print(f"ffmpeg failed → falling back to PyAV: {exc}")
+            print(f"ffmpeg failed -> falling back to PyAV: {exc}")
             _concat_with_pyav(scenes, out_path, gap_seconds)
             method = "PyAV / libx264"
     else:

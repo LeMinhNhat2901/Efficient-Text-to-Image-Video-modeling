@@ -17,38 +17,38 @@ sys.path.insert(0, str(ROOT))
 from config import BG
 
 SCENES = [
-    ROOT / "media" / "videos" / "s00_roadmap" / "480p15" / "RoadmapOverview.mp4",
+    ROOT / "media" / "video_01" / "videos" / "s00_roadmap" / "480p15" / "RoadmapOverview.mp4",
     ROOT
     / "media"
     / "videos"
     / "s01_forward_ou_wiener"
     / "480p15"
     / "ForwardOUWiener.mp4",
-    ROOT / "media" / "videos" / "s02_markov" / "480p15" / "MarkovChainScene.mp4",
+    ROOT / "media" / "video_01" / "videos" / "s02_markov" / "480p15" / "MarkovChainScene.mp4",
     ROOT
     / "media"
     / "videos"
     / "s03_reverse_chain"
     / "480p15"
     / "ReverseMarkovChain.mp4",
-    ROOT / "media" / "videos" / "s04_score_compass" / "480p15" / "ScoreCompassScene.mp4",
-    ROOT / "media" / "videos" / "s05_local_linear" / "480p15" / "LocalLinearScoreScene.mp4",
+    ROOT / "media" / "video_01" / "videos" / "s04_score_compass" / "480p15" / "ScoreCompassScene.mp4",
+    ROOT / "media" / "video_01" / "videos" / "s05_local_linear" / "480p15" / "LocalLinearScoreScene.mp4",
     ROOT
     / "media"
     / "videos"
     / "s06_mse_conditional_mean"
     / "480p15"
     / "MSEConditionalMeanScene.mp4",
-    ROOT / "media" / "videos" / "s07_training_loop" / "480p15" / "TrainingLoopScene.mp4",
-    ROOT / "media" / "videos" / "s08_sde_drift_diffusion" / "480p15" / "ContinuousTimeFlowScene.mp4",
-    ROOT / "media" / "videos" / "s09_probability_flow_ode" / "480p15" / "DriftDiffusionScene.mp4",
-    ROOT / "media" / "videos" / "s10_fokker_planck_score" / "480p15" / "FokkerPlanckScoreScene.mp4",
-    ROOT / "media" / "videos" / "s11_reverse_distribution" / "480p15" / "ReverseDistributionScene.mp4",
-    ROOT / "media" / "videos" / "s12_runge_kutta_solver" / "480p15" / "RungeKuttaSolverScene.mp4",
-    ROOT / "media" / "videos" / "s13_finale_failure" / "480p15" / "FinaleFailureScene.mp4",
+    ROOT / "media" / "video_01" / "videos" / "s07_training_loop" / "480p15" / "TrainingLoopScene.mp4",
+    ROOT / "media" / "video_01" / "videos" / "s08_sde_drift_diffusion" / "480p15" / "ContinuousTimeFlowScene.mp4",
+    ROOT / "media" / "video_01" / "videos" / "s09_probability_flow_ode" / "480p15" / "DriftDiffusionScene.mp4",
+    ROOT / "media" / "video_01" / "videos" / "s10_fokker_planck_score" / "480p15" / "FokkerPlanckScoreScene.mp4",
+    ROOT / "media" / "video_01" / "videos" / "s11_reverse_distribution" / "480p15" / "ReverseDistributionScene.mp4",
+    ROOT / "media" / "video_01" / "videos" / "s12_runge_kutta_solver" / "480p15" / "RungeKuttaSolverScene.mp4",
+    ROOT / "media" / "video_01" / "videos" / "s13_finale_failure" / "480p15" / "FinaleFailureScene.mp4",
 ]
 
-OUT_DIR = ROOT / "media" / "videos" / "preview_480p15"
+OUT_DIR = ROOT / "media" / "video_01" / "videos" / "preview_480p15"
 OUT_PATH = OUT_DIR / "DiffusionPrototypePreview.mp4"
 FPS = 15
 GAP_SECONDS = 0.25

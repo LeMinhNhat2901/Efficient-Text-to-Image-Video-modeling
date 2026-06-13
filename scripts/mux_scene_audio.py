@@ -104,7 +104,8 @@ def default_video(scene: str, quality_dir: str) -> Path:
     if scene not in scene_map:
         raise ValueError(f"No default path configured for scene {scene!r}. Pass --video explicitly.")
     folder, class_name = scene_map[scene]
-    return ROOT / "media" / "videos" / folder / quality_dir / f"{class_name}.mp4"
+    video_dir = "video_02" if "v02_" in scene else "video_01"
+    return ROOT / "media" / video_dir / "videos" / folder / quality_dir / f"{class_name}.mp4"
 
 
 def default_audio(scene: str) -> Path:

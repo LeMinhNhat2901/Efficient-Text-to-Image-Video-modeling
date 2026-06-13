@@ -21,30 +21,30 @@ The current build locks every scene to the narration target using `TARGET_DURATI
 
 | Scene | File | Target |
 | --- | --- | ---: |
-| 1 | `scenes/s00_roadmap.py` | 154.3s |
-| 2 | `scenes/s01_forward_ou_wiener.py` | 210s |
-| 3 | `scenes/s02_markov.py` | 180s |
-| 4 | `scenes/s03_reverse_chain.py` | 210s |
-| 5 | `scenes/s04_score_compass.py` | 180s |
-| 6 | `scenes/s05_local_linear.py` | 180s |
-| 7 | `scenes/s06_mse_conditional_mean.py` | 210s |
-| 8 | `scenes/s07_training_loop.py` | 150s |
-| 9 | `scenes/s08_sde_drift_diffusion.py` | 165s |
-| 10 | `scenes/s09_probability_flow_ode.py` | 180s |
-| 11 | `scenes/s10_fokker_planck_score.py` | 165s |
-| 12 | `scenes/s11_reverse_distribution.py` | 165s |
-| 13 | `scenes/s12_runge_kutta_solver.py` | 195s |
-| 14 | `scenes/s13_finale_failure.py` | 120s |
+| 1 | `scenes/video_01/s00_roadmap.py` | 154.3s |
+| 2 | `scenes/video_01/s01_forward_ou_wiener.py` | 210s |
+| 3 | `scenes/video_01/s02_markov.py` | 180s |
+| 4 | `scenes/video_01/s03_reverse_chain.py` | 210s |
+| 5 | `scenes/video_01/s04_score_compass.py` | 180s |
+| 6 | `scenes/video_01/s05_local_linear.py` | 180s |
+| 7 | `scenes/video_01/s06_mse_conditional_mean.py` | 210s |
+| 8 | `scenes/video_01/s07_training_loop.py` | 150s |
+| 9 | `scenes/video_01/s08_sde_drift_diffusion.py` | 165s |
+| 10 | `scenes/video_01/s09_probability_flow_ode.py` | 180s |
+| 11 | `scenes/video_01/s10_fokker_planck_score.py` | 165s |
+| 12 | `scenes/video_01/s11_reverse_distribution.py` | 165s |
+| 13 | `scenes/video_01/s12_runge_kutta_solver.py` | 195s |
+| 14 | `scenes/video_01/s13_finale_failure.py` | 120s |
 
 Total scene time follows the rendered narration WAVs when they are available. Preview concat adds 0.25s gaps between scenes.
 
 ## Scene 1 - Opening Intuition
 
-Scene file: `scenes/s00_roadmap.py`
+Scene file: `scenes/video_01/s00_roadmap.py`
 
 Class: `RoadmapOverview`
 
-Target duration: 154.3 seconds, matched to `tts/outputs/s00_roadmap.wav`.
+Target duration: 154.3 seconds, matched to `tts/outputs/video_01/s00_roadmap.wav`.
 
 Visual beats:
 
@@ -85,7 +85,7 @@ Noise increases entropy and breaks visible structure.
 
 ## Scene 2 - Forward Process Mathematics
 
-Scene file: `scenes/s01_forward_ou_wiener.py`
+Scene file: `scenes/video_01/s01_forward_ou_wiener.py`
 
 Class: `ForwardOUWiener`
 
@@ -125,7 +125,7 @@ X_t=\tilde{\alpha}_t X_0+\sqrt{\tilde{\beta}_t}G
 
 ## Scene 3 - Coin Toss And Markov Property
 
-Scene file: `scenes/s02_markov.py`
+Scene file: `scenes/video_01/s02_markov.py`
 
 Class: `MarkovChainScene`
 
@@ -152,7 +152,7 @@ p(x_{0:T})=p(x_0)\prod_{t=1}^{T}p(x_t\mid x_{t-1})
 
 ## Scene 4 - Telescoping And Reverse Probability
 
-Scene file: `scenes/s03_reverse_chain.py`
+Scene file: `scenes/video_01/s03_reverse_chain.py`
 
 Class: `ReverseMarkovChain`
 
@@ -197,7 +197,7 @@ The concat script first tries FFmpeg, then falls back to PyAV/libx264 if the loc
 
 ## Scene 5 - Score Compass
 
-Scene file: `scenes/s04_score_compass.py`
+Scene file: `scenes/video_01/s04_score_compass.py`
 
 Class: `ScoreCompassScene`
 
@@ -226,7 +226,7 @@ y \leftarrow y+\beta\nabla\log p_X(y)
 
 ## Scene 6 - Local Linear Approximation
 
-Scene file: `scenes/s05_local_linear.py`
+Scene file: `scenes/video_01/s05_local_linear.py`
 
 Class: `LocalLinearScoreScene`
 
@@ -247,7 +247,7 @@ Main equation:
 
 ## Scene 7 - MSE And Conditional Mean
 
-Scene file: `scenes/s06_mse_conditional_mean.py`
+Scene file: `scenes/video_01/s06_mse_conditional_mean.py`
 
 Class: `MSEConditionalMeanScene`
 
@@ -278,7 +278,7 @@ f^*(y)=\mathbb{E}[X\mid y]
 
 ## Scene 8 - Training Loop And Learned Breadcrumbs
 
-Scene file: `scenes/s07_training_loop.py`
+Scene file: `scenes/video_01/s07_training_loop.py`
 
 Class: `TrainingLoopScene`
 
@@ -297,7 +297,7 @@ Visual beats:
 
 ## Scene 9 - Breadcrumbs To Continuous Flow
 
-Scene file: `scenes/s08_sde_drift_diffusion.py`
+Scene file: `scenes/video_01/s08_sde_drift_diffusion.py`
 
 Class: `ContinuousTimeFlowScene`
 
@@ -320,7 +320,7 @@ dX=\sqrt{\beta(t)}\,dW
 
 ## Scene 10 - Oil Slick: Drift And Diffusion
 
-Scene file: `scenes/s09_probability_flow_ode.py`
+Scene file: `scenes/video_01/s09_probability_flow_ode.py`
 
 Class: `DriftDiffusionScene`
 
@@ -350,7 +350,7 @@ dX=\alpha(x,t)\,dt+\sqrt{\beta(t)}\,dW
 
 ## Scene 11 - Fokker-Planck And The Score
 
-Scene file: `scenes/s10_fokker_planck_score.py`
+Scene file: `scenes/video_01/s10_fokker_planck_score.py`
 
 Class: `FokkerPlanckScoreScene`
 
@@ -376,7 +376,7 @@ v(x,t)=\alpha(x,t)-\frac{\beta(t)}{2}\nabla\log p(x,t)
 
 ## Scene 12 - Reverse In Distribution
 
-Scene file: `scenes/s11_reverse_distribution.py`
+Scene file: `scenes/video_01/s11_reverse_distribution.py`
 
 Class: `ReverseDistributionScene`
 
@@ -398,7 +398,7 @@ d\bar X=\left[\cdots-\beta\nabla\log p\right]dt+\sqrt{\beta}\,d\bar W
 
 ## Scene 13 - Euler And Runge-Kutta Solvers
 
-Scene file: `scenes/s12_runge_kutta_solver.py`
+Scene file: `scenes/video_01/s12_runge_kutta_solver.py`
 
 Class: `RungeKuttaSolverScene`
 
@@ -424,7 +424,7 @@ y_{n+1}=y_n+\frac{h}{6}(k_1+2k_2+2k_3+k_4)
 
 ## Scene 14 - Failure Cases And Final Synthesis
 
-Scene file: `scenes/s13_finale_failure.py`
+Scene file: `scenes/video_01/s13_finale_failure.py`
 
 Class: `FinaleFailureScene`
 

@@ -122,6 +122,8 @@ def main() -> None:
         cmd = [sys.executable, "-m", "manim", quality_flag, file_name, scene_name]
         if args.disable_caching:
             cmd.insert(4, "--disable_caching")
+        media_dir = "media/video_01" if "video_01" in file_name else "media/video_02"
+        cmd.extend(["--media_dir", media_dir])
         print(" ".join(cmd))
         subprocess.run(cmd, check=True, cwd=project_root)
 

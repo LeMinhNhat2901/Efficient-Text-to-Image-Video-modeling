@@ -4,9 +4,9 @@ Video 2 follows the provided script line by line and is split into three Manim s
 
 | Order | File | Class | Script Coverage |
 | ---: | --- | --- | --- |
-| 00 | `scenes/v02_s00_text_pixels_opening.py` | `V02TextPixelsOpening` | Scene 0, slides 1-3 |
-| 01 | `scenes/v02_s01_generative_backbones.py` | `V02GenerativeBackbones` | Scene 1, slides 4-8 |
-| 02 | `scenes/v02_s02_clip_coembedding.py` | `V02ClipCoEmbedding` | Scene 2, slides 9-15 |
+| 00 | `scenes/video_02/s00_text_pixels_opening.py` | `V02TextPixelsOpening` | Scene 0, slides 1-3 |
+| 01 | `scenes/video_02/s01_generative_backbones.py` | `V02GenerativeBackbones` | Scene 1, slides 4-8 |
+| 02 | `scenes/video_02/s02_clip_coembedding.py` | `V02ClipCoEmbedding` | Scene 2, slides 9-15 |
 
 ## Shot Mapping
 

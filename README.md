@@ -11,14 +11,17 @@ shape without mixing new work into render caches.
 ## Repo Layout
 
 ```text
-base_scene.py              Shared scene helpers and visual language.
+base_scene.py              (Moved to scenes/common/base_scene.py)
 config.py                  Colors, typography, spacing, and global constants.
 render.py                  Renders configured scenes and muxes narration when present.
-scenes/                    Manim scene source files.
+scenes/
+  ├── common/              Shared visual language and configs.
+  ├── video_01/            Video 1 source files.
+  └── video_02/            Video 2 source files.
 scripts/                   Utility scripts for precompute, TTS, muxing, and preview export.
 tts/                       Narration text, generation notes, and private voice references.
 assets/                    Checked-in source assets and attribution notes.
-docs/                      Storyboards, equations, draft scripts, and video pipeline notes.
+docs/                      Pipeline notes and documentation.
 media/                     Local Manim output. Ignored by git.
 tmp_review_frames/         Local frame grabs for visual review. Ignored by git.
 ```
@@ -126,20 +129,20 @@ file, and troubleshooting.
 
 | Order | File | Class |
 | ---: | --- | --- |
-| 00 | `scenes/s00_roadmap.py` | `RoadmapOverview` |
-| 01 | `scenes/s01_forward_ou_wiener.py` | `ForwardOUWiener` |
-| 02 | `scenes/s02_markov.py` | `MarkovChainScene` |
-| 03 | `scenes/s03_reverse_chain.py` | `ReverseMarkovChain` |
-| 04 | `scenes/s04_score_compass.py` | `ScoreCompassScene` |
-| 05 | `scenes/s05_local_linear.py` | `LocalLinearScoreScene` |
-| 06 | `scenes/s06_mse_conditional_mean.py` | `MSEConditionalMeanScene` |
-| 07 | `scenes/s07_training_loop.py` | `TrainingLoopScene` |
-| 08 | `scenes/s08_sde_drift_diffusion.py` | `ContinuousTimeFlowScene` |
-| 09 | `scenes/s09_probability_flow_ode.py` | `DriftDiffusionScene` |
-| 10 | `scenes/s10_fokker_planck_score.py` | `FokkerPlanckScoreScene` |
-| 11 | `scenes/s11_reverse_distribution.py` | `ReverseDistributionScene` |
-| 12 | `scenes/s12_runge_kutta_solver.py` | `RungeKuttaSolverScene` |
-| 13 | `scenes/s13_finale_failure.py` | `FinaleFailureScene` |
+| 00 | `scenes/video_01/s00_roadmap.py` | `RoadmapOverview` |
+| 01 | `scenes/video_01/s01_forward_ou_wiener.py` | `ForwardOUWiener` |
+| 02 | `scenes/video_01/s02_markov.py` | `MarkovChainScene` |
+| 03 | `scenes/video_01/s03_reverse_chain.py` | `ReverseMarkovChain` |
+| 04 | `scenes/video_01/s04_score_compass.py` | `ScoreCompassScene` |
+| 05 | `scenes/video_01/s05_local_linear.py` | `LocalLinearScoreScene` |
+| 06 | `scenes/video_01/s06_mse_conditional_mean.py` | `MSEConditionalMeanScene` |
+| 07 | `scenes/video_01/s07_training_loop.py` | `TrainingLoopScene` |
+| 08 | `scenes/video_01/s08_sde_drift_diffusion.py` | `ContinuousTimeFlowScene` |
+| 09 | `scenes/video_01/s09_probability_flow_ode.py` | `DriftDiffusionScene` |
+| 10 | `scenes/video_01/s10_fokker_planck_score.py` | `FokkerPlanckScoreScene` |
+| 11 | `scenes/video_01/s11_reverse_distribution.py` | `ReverseDistributionScene` |
+| 12 | `scenes/video_01/s12_runge_kutta_solver.py` | `RungeKuttaSolverScene` |
+| 13 | `scenes/video_01/s13_finale_failure.py` | `FinaleFailureScene` |
 
 Detailed timing and visual beats are in `docs/video1_pipeline.md`.
 
@@ -150,10 +153,10 @@ Suggested convention:
 ```text
 docs/video2_outline.md
 docs/video2_pipeline.md
-scenes/v02_s00_<topic>.py
-scenes/v02_s01_<topic>.py
-tts/scripts/v02_s00_<topic>.txt
-tts/scripts/v02_s01_<topic>.txt
+scenes/video_02/s00_<topic>.py
+scenes/video_02/s01_<topic>.py
+tts/scripts/video_02/s00_<topic>.txt
+tts/scripts/video_02/s01_<topic>.txt
 ```
 
 When Video 2 scenes are ready, add them to the `SCENES` and `AUDIO_SCENES`

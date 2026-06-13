@@ -34,19 +34,19 @@ and `scene_00_test.txt` are not generated accidentally.
 Generate the first scene with the cinematic preset:
 
 ```powershell
-python scripts/generate_chatterbox_tts.py --input tts/scripts/s00_roadmap.txt --output-dir tts/outputs --device cuda --preset cinematic --overwrite
+python scripts/generate_chatterbox_tts.py --input tts/scripts/video_01/s00_roadmap.txt --output-dir tts/outputs/video_01 --device cuda --preset cinematic --overwrite
 ```
 
 Generate a slower first-scene read and stretch it with FFmpeg:
 
 ```powershell
-python scripts/generate_chatterbox_tts.py --input tts/scripts/s00_roadmap.txt --output-dir tts/outputs --device cuda --preset adam_slow --max-chars 180 --pause-ms 550 --tempo 1.0 --normalize-peak 0.90 --overwrite
+python scripts/generate_chatterbox_tts.py --input tts/scripts/video_01/s00_roadmap.txt --output-dir tts/outputs/video_01 --device cuda --preset adam_slow --max-chars 180 --pause-ms 550 --tempo 1.0 --normalize-peak 0.90 --overwrite
 ```
 
 If it still feels too fast, use only a light stretch:
 
 ```powershell
-python scripts/generate_chatterbox_tts.py --input tts/scripts/s00_roadmap.txt --output-dir tts/outputs --device cuda --preset adam_slow --max-chars 160 --pause-ms 700 --tempo 1.0 --normalize-peak 0.90 --overwrite
+python scripts/generate_chatterbox_tts.py --input tts/scripts/video_01/s00_roadmap.txt --output-dir tts/outputs/video_01 --device cuda --preset adam_slow --max-chars 160 --pause-ms 700 --tempo 1.0 --normalize-peak 0.90 --overwrite
 ```
 
 Use a voice reference:
@@ -85,7 +85,7 @@ into longer chunks.
 The full narration source lives at:
 
 ```text
-tts/scripts/voice.txt
+tts/scripts/common/voice.txt
 ```
 
 Split it into per-scene files:
@@ -94,7 +94,7 @@ Split it into per-scene files:
 python scripts/split_voice_scenes.py
 ```
 
-By default this keeps the hand-tuned `tts/scripts/s00_roadmap.txt`. To rebuild
+By default this keeps the hand-tuned `tts/scripts/video_01/s00_roadmap.txt`. To rebuild
 scene 00 from `voice.txt` too:
 
 ```powershell
@@ -104,13 +104,13 @@ python scripts/split_voice_scenes.py --overwrite-s00
 Generate one scene:
 
 ```powershell
-.\tts\generate_scene_wavs.ps1 -Scene s01
+.\tts\generate_video_01_wavs.ps1 -Scene s01
 ```
 
 Generate all scenes:
 
 ```powershell
-.\tts\generate_scene_wavs.ps1 -Scene all
+.\tts\generate_video_01_wavs.ps1 -Scene all
 ```
 
 Preview chunking without loading the model:

@@ -183,9 +183,9 @@ PUNCTUATION_REPLACEMENTS = {
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Split tts/scripts/voice.txt into per-scene TTS files.")
-    parser.add_argument("--source", type=Path, default=Path("tts/scripts/voice.txt"))
-    parser.add_argument("--output-dir", type=Path, default=Path("tts/scripts"))
+    parser = argparse.ArgumentParser(description="Split tts/scripts/common/voice.txt into per-scene TTS files.")
+    parser.add_argument("--source", type=Path, default=Path("tts/scripts/common/voice.txt"))
+    parser.add_argument("--output-dir", type=Path, default=Path("tts/scripts/video_01"))
     parser.add_argument("--overwrite-s00", action="store_true", help="Overwrite the hand-tuned s00_roadmap.txt too.")
     return parser.parse_args()
 
