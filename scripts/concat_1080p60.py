@@ -62,18 +62,18 @@ VIDEO1_SCENES: list[tuple[str, str]] = [
 ]
 
 VIDEO2_SCENES: list[tuple[str, str]] = [
-    ("v02_s00_text_pixels_opening",    "V02TextPixelsOpening"),
-    ("v02_s01_generative_backbones",   "V02GenerativeBackbones"),
-    ("v02_s02_clip_coembedding",       "V02ClipCoEmbedding"),
-    ("v02_s03_vqgan_visual_words",     "V02VqganVisualWords"),
-    ("v02_s04_architecture_evolution", "V02ArchitectureEvolution"),
-    ("v02_s05_muse_markovgen",         "V02MuseMarkovgen"),
-    ("v02_s06_diffusion_intuition",    "V02DiffusionIntuition"),
-    ("v02_s07_diffusion_math",         "V02DiffusionMath"),
-    ("v02_s08_guidance",               "V02Guidance"),
-    ("v02_s09_latent_diffusion_crf",    "V02LatentDiffusionCRF"),
-    ("v02_s10_sana_var",               "V02SanaVar"),
-    ("v02_s11_discussion_finale",       "V02DiscussionFinale"),
+    ("s00_text_pixels_opening",    "V02TextPixelsOpening"),
+    ("s01_generative_backbones",   "V02GenerativeBackbones"),
+    ("s02_clip_coembedding",       "V02ClipCoEmbedding"),
+    ("s03_vqgan_visual_words",     "V02VqganVisualWords"),
+    ("s04_architecture_evolution", "V02ArchitectureEvolution"),
+    ("s05_muse_markovgen",         "V02MuseMarkovgen"),
+    ("s06_diffusion_intuition",    "V02DiffusionIntuition"),
+    ("s07_diffusion_math",         "V02DiffusionMath"),
+    ("s08_guidance",               "V02Guidance"),
+    ("s09_latent_diffusion_crf",    "V02LatentDiffusionCRF"),
+    ("s10_sana_var",               "V02SanaVar"),
+    ("s11_discussion_finale",       "V02DiscussionFinale"),
 ]
 
 QUALITY = "1080p60"

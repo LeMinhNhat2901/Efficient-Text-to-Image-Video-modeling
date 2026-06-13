@@ -1,0 +1,914 @@
+Look at this puppy.
+
+For now, it is perfectly recognizable.
+
+Two eyes, a nose, fur, background - a tiny, adorable bundle of pixels.
+
+Very scientific.
+
+Very cute.
+
+But now...
+
+let us do something slightly cruel...
+
+in the name of mathematics.
+
+At every time step, we add a little bit of random noise.
+
+Not too much at first.
+
+Just enough to disturb the image.
+
+Then a little more.
+
+And more.
+
+After many steps, the puppy disappears.
+
+What remains is not a dog.
+
+Not a face.
+
+Not even a bad drawing.
+
+It is just noise.
+
+This is the easy direction.
+
+If you add random noise to a structured object for long enough, structure breaks down.
+
+It is the same intuition behind entropy:
+
+when randomness keeps entering a system...
+
+order tends to dissolve.
+
+Now let us switch from pixels to geometry.
+
+Instead of thinking of this image as a picture, imagine it as a point in a very high-dimensional space.
+
+A small image may have thousands or millions of pixel values.
+
+In machine learning language, an image is just one point in a huge coordinate system.
+
+A very emotional point, if it is a puppy, but still a point.
+
+For visualization, we compress this idea into two dimensions.
+
+Suppose our clean data lives on a beautiful spiral-shaped structure.
+
+This is the data distribution:
+
+ordered, meaningful, and concentrated.
+
+Now we add noise step by step.
+
+The spiral begins to blur.
+
+The points spread out.
+
+The structure dissolves into a cloud.
+
+This direction is called the forward process.
+
+But diffusion models are built around the opposite question.
+
+Can we start from pure noise...
+
+and step by step...
+
+move back toward structure?
+
+Not necessarily to recover this exact original puppy - that would be too strong.
+
+Instead, can we learn a path from random noise...
+
+toward regions where realistic data is likely to live?
+
+That learned backward process is the heart of diffusion models.
+
+So the story of this video is simple:
+
+First, we destroy structure in a controlled way.
+
+Then, using probability, neural networks, and a surprising amount of beautiful mathematics...
+
+we learn how to come back.
+
+
+To make this destruction useful, we need to describe it mathematically.
+
+Let X t be the state of our data at time step t.
+
+The forward process says that X t is produced from the previous state X t minus one.
+
+A simple version looks like this:
+
+X t equals alpha t times X t minus one,
+
+plus square root beta t times G.
+
+This equation has two jobs.
+
+The first term, alpha t times X t minus one, keeps some of the old signal.
+
+Usually, alpha t is less than one, so it slightly shrinks the previous data.
+
+In plain English: it keeps the old image, but makes it a bit weaker.
+
+The second term, square root beta t times G, adds Gaussian noise.
+
+Here, G is independent Gaussian noise.
+
+The value beta t controls the noise variance, and square root beta t is the scale of the noise we actually add.
+
+So at every step, we do two things: preserve a little signal, inject a little randomness.
+
+If this sounds like carefully destroying your data, that is exactly what it is.
+
+We are not smashing the image with a hammer.
+
+We are dissolving it with a pipette.
+
+Now look at the variance circle.
+
+The horizontal direction represents how much clean structure remains.
+
+The vertical direction represents how much noise we add.
+
+As time increases, the vector rotates away from the structure axis and toward the noise axis.
+
+The important idea is that the process is controlled.
+
+We do not want the data to explode into infinity.
+
+We want the signal to fade while the noise takes over in a mathematically predictable way.
+
+This is why the random walks stay inside a growing but controlled band of uncertainty.
+
+The trajectories look messy, but the distribution around them is not arbitrary.
+
+And because Gaussian noise behaves so nicely, we get a shortcut.
+
+Instead of simulating every tiny step from X zero to X t, we can jump directly:
+
+X t equals alpha bar t times X zero,
+
+plus square root beta bar t times G.
+
+Here, alpha bar t summarizes all the signal-preserving factors from the first step up to time t.
+
+This shortcut is extremely useful.
+
+During training, we can choose any time step t, create a noisy version immediately,
+
+and ask the model to learn how to undo it.
+
+So the forward process is not the hard part.
+
+We designed it.
+
+The real challenge is the backward process.
+
+
+Now let us look more carefully at the forward equation.
+
+There is a very important property hiding inside it.
+
+To produce X t, we only use X t minus one.
+
+We do not directly look at X t minus two, or X zero, or the entire history of the system.
+
+It is like a robot walking through a foggy maze with extremely short-term memory.
+
+At each step, the robot only says: "Where am I now?
+
+Great.
+
+Let me move from here." It does not open a full autobiography of every previous step.
+
+That would be dramatic, but unnecessary.
+
+This is the Markov property.
+
+It says:
+
+Once we know the current state,
+
+the distant past does not provide additional direct information about the next state.
+
+More formally:
+
+p of x t, given x zero through x t minus one,
+
+equals p of x t, given x t minus one.
+
+This does not mean the past is irrelevant in a philosophical sense.
+
+The past helped create x t minus one.
+
+But once x t minus one is known, that state already summarizes everything the process needs for the next step.
+
+In the animation, all older nodes fade away.
+
+A wall falls between the distant past and the present.
+
+Only the arrow from x t minus one to x t remains bright.
+
+This simple idea gives us a powerful factorization.
+
+The probability of the entire trajectory can be written as:
+
+p of x zero to T,
+
+equals p of x zero,
+
+times the product from t equals one to T,
+
+of p of x t given x t minus one.
+
+Instead of modeling one enormous transformation from clean data to pure noise, we model many small transitions.
+
+And that is exactly why diffusion models are trainable.
+
+They turn one impossible leap into a long sequence of tiny, manageable steps.
+
+
+Now comes the key question.
+
+If the forward Markov chain takes us from data to noise,
+
+can a reverse Markov chain take us from noise back to data?
+
+In symbols, can we describe transitions like this?
+
+q of x t minus one, given x t.
+
+In other words: if I am standing at a noisy state x t, what is the probability distribution over the previous,
+
+slightly cleaner state x t minus one?
+
+Theorem 2.2.5 says yes: the same joint distribution can be written in the reverse direction.
+
+And the tool that makes this possible is Bayes' rule.
+
+Forward probabilities and backward probabilities are connected.
+
+If we expand the full trajectory probability using Bayes' rule, a beautiful cancellation happens.
+
+At first, the expression looks terrifying - and mathematically, "terrifying" usually means "please wait,
+
+something will cancel."
+
+We get a long chain of fractions.
+
+Terms like q of x one, q of x two, and so on appear in both numerators and denominators.
+
+Then the telescoping begins.
+
+One term cancels.
+
+Then another.
+
+Then another.
+
+It is like watching a long line of dominoes politely remove themselves from the equation.
+
+And after all the cancellations, the reverse factorization remains:
+
+q of x zero to T,
+
+equals q of x T,
+
+times the product from t equals one to T,
+
+of q of x t minus one, given x t.
+
+This is a major turning point.
+
+It means the path from noise back to data can also be described as a Markov chain.
+
+But there is a catch - and in mathematics, the catch is usually where the PhD begins.
+
+The formula tells us the reverse conditionals exist.
+
+It does not tell us how to compute them in high-dimensional image space.
+
+For a tiny toy dataset, maybe we can calculate everything.
+
+But for a million-pixel image?
+
+Good luck writing down the full probability density by hand.
+
+You would need a very large notebook and possibly a snack.
+
+So the next question is not: "Does the reverse process exist?"
+
+It is:
+
+How do we learn it?
+
+
+Imagine being lost in a dark forest.
+
+In the fairy tale, Hansel and Gretel try to find their way back using breadcrumbs.
+
+In diffusion, we are also lost - but our forest is a high-dimensional cloud of noise.
+
+And our breadcrumbs are not made of bread.
+
+They are made of probability.
+
+Now look at this probability terrain.
+
+Bright regions are where data is likely to live.
+
+Dark regions are low-probability noise.
+
+In our two-dimensional toy example,
+
+the data forms something like a Swiss roll - a structured region inside a much larger space.
+
+A noisy point y falls into the dark region.
+
+What direction should it move?
+
+This is where the score function appears.
+
+nabla log p X of y.
+
+The score is a local compass.
+
+At the current point y, it points in the direction where log-probability increases fastest.
+
+Notice the word local.
+
+The score does not magically draw a straight line all the way home.
+
+It does not open Google Maps and say, "In 300 meters, turn left at the Gaussian."
+
+It only tells us the best infinitesimal direction from where we are right now.
+
+In the animation, one arrow appears at y.
+
+Then nearby arrows pulse into view.
+
+Finally, the whole vector field appears as a probability compass over the terrain.
+
+If we take a tiny step along the score, the point moves toward a region of higher probability.
+
+Repeat this many times, and the point begins to climb back toward the data structure.
+
+This is the intuition behind the reverse process:
+
+not one giant jump from noise to data, but many small probability-guided steps.
+
+The score is the compass.
+
+The data manifold is home.
+
+And the noisy point is just trying not to get eaten by birds.
+
+
+
+Now we need to turn this compass into an equation.
+
+Globally, the probability landscape is complicated.
+
+It bends, twists, folds, and generally behaves like a mathematical mountain range.
+
+But locally, if we zoom into a tiny neighborhood around y, the landscape becomes much simpler.
+
+This is the idea of local linear approximation.
+
+Inside the magnifying glass, the curved contour lines start to look almost straight.
+
+The complicated terrain becomes approximately a tilted plane.
+
+And in that small neighborhood, the theorem gives us a beautiful approximation:
+
+mu of X given y,
+
+is approximately y plus beta times nabla log p X of y.
+
+Let us unpack this.
+
+mu of X given y is the conditional mean - the average previous state that could have produced the noisy point y.
+
+The formula says:
+
+Start at the current point y.
+
+Look at the score direction.
+
+Take a small step in that direction.
+
+The result approximates the backward mean.
+
+The coefficient beta controls the step size.
+
+If beta is small, the step is short and stable.
+
+The local approximation remains trustworthy.
+
+If beta is too large, the point overshoots.
+
+It jumps past the region where the local linear picture was valid.
+
+In the animation, the stable step lands near the probability ridge,
+
+while the oversized step flies off like a student who clicked "submit" without reading the question.
+
+This is why diffusion uses many small steps.
+
+Small steps are easier to approximate.
+
+But now we hit the real wall.
+
+The formula requires nabla log p X of y.
+
+For a two-dimensional toy landscape, we can draw it.
+
+For real images with millions of dimensions, computing this score explicitly is essentially impossible.
+
+So the formula is beautiful.
+
+But it hides the hardest part:
+
+How do we get the score?
+
+That is where learning enters.
+
+
+
+Instead of explicitly computing the score everywhere, we train a neural network to solve a denoising problem.
+
+Here is the statistical miracle.
+
+Suppose we know a noisy observation y.
+
+There may be many possible cleaner states x that could have produced it.
+
+If the model must output one single prediction, what should it choose?
+
+Let us visualize the possibilities as points.
+
+Each possible x pulls on the prediction.
+
+If the prediction is too far left, many distances become large.
+
+If it is too far right, same problem.
+
+The best compromise is the center of mass of all possible x's conditioned on y.
+
+That center is:
+
+the expected value of X, given Y equals y.
+
+Now we turn this into training.
+
+We define a squared error loss:
+
+L of f theta,
+
+equals the expected squared distance between f theta of y and x.
+
+This is ordinary mean squared error.
+
+Nothing fancy.
+
+The kind of loss function that has been quietly doing homework since the early days of machine learning.
+
+But the theorem says something powerful:
+
+The function that minimizes this expected squared error is:
+
+f star of y equals the expected value of X, given Y equals y.
+
+So MSE does not just make predictions "close." Under ideal conditions, it learns the conditional mean.
+
+In the animation, the balance beam finds its center.
+
+Then it morphs into a parabola.
+
+A ball rolls down to the minimum.
+
+At the bottom, the formula appears:
+
+f star of y equals the expected value of X, given Y equals y.
+
+In diffusion, this becomes the learned backward mean:
+
+mu theta of y and t.
+
+This is very important.
+
+We are not saying the neural network becomes perfect.
+
+In practice, it learns an approximation.
+
+The score compass is estimated, not magically downloaded from the universe.
+
+But this approximation is enough.
+
+Instead of computing the impossible probability density directly, the network learns how to denoise.
+
+And by learning to denoise, it learns the direction back toward structure.
+
+So the compass gets absorbed into the neural network.
+
+
+
+Now we can write the training algorithm.
+
+Choose a timestep t.
+
+Take a sample from the cleaner previous state, which we can think of as x t minus one.
+
+Add forward noise to obtain a noisy state y equals x t.
+
+Then give y and t to the neural network.
+
+The network predicts:
+
+mu theta of y and t,
+
+a cleaner state, one step back.
+
+We compare this prediction to the true cleaner target using squared error.
+
+At first, the prediction may be very wrong.
+
+The loss meter is red.
+
+The reverse arrow points in a suspicious direction.
+
+Not ideal.
+
+The model is basically saying, "I think the way home is...
+
+through that wall."
+
+But after many updates, the prediction improves.
+
+The loss decreases.
+
+The arrow becomes more aligned with the true reverse direction.
+
+Repeat this over many samples and many noise levels, and the network learns a map of the probability terrain.
+
+During sampling, we start from pure noise.
+
+The model gives one small reverse step.
+
+Then another.
+
+Then another.
+
+Each step is like a learned breadcrumb.
+
+After many such steps, the noisy cloud moves back toward a structured data region.
+
+Again, this is not an exact physical rewind of one original image.
+
+It is a learned probabilistic path from noise toward high-probability data.
+
+So far, however, every step has been discrete.
+
+But what happens if we make the steps infinitely small?
+
+The breadcrumbs become a continuous path.
+
+And diffusion enters the world of stochastic differential equations.
+
+
+
+We now take the discrete reverse steps and make them denser.
+
+The gaps shrink.
+
+The ticks on the time axis divide again and again: half, quarter, eighth, sixteenth.
+
+Eventually, the separate breadcrumbs blur into a continuous curve.
+
+When the steps become infinitesimally small,
+
+the discrete noise term is replaced by a continuous random motion term:
+
+d W.
+
+This is the increment of a Wiener process.
+
+The Wiener process is the standard mathematical model for continuous random motion.
+
+It is the formal version of "this particle is jittering forever, and no, it is not just nervous."
+
+A pure noise process can be written simply as:
+
+d X equals square root beta of t, times d W.
+
+At the level of individual particles, the paths look random.
+
+Each particle wiggles in its own unpredictable way.
+
+But now we change perspective.
+
+Instead of following one particle, we follow the whole cloud.
+
+As the particles spread, we group them into a histogram.
+
+Then the histogram becomes a smooth density curve.
+
+This is the key shift:
+
+Individual sample paths are random.
+
+The evolution of the probability density is structured.
+
+And that density evolution is what the next equations describe.
+
+
+To understand continuous diffusion, imagine a thin layer of oil floating on a slow stream.
+
+Its motion has two separate components.
+
+On the left side, we have drift.
+
+Drift is deterministic.
+
+The water current pushes the oil particles along a velocity field.
+
+If the current curves, the particles curve.
+
+If the current compresses, probability mass accumulates.
+
+If it expands, probability spreads out.
+
+Mathematically, drift looks like:
+
+d X equals alpha of x and t, times d t.
+
+On the right side, we have pure diffusion.
+
+Even if the water is still, the oil particles do not stay perfectly fixed.
+
+Random microscopic motion makes them spread.
+
+They jitter, collide, and gradually move outward.
+
+This random part is written as:
+
+d X equals square root beta of t, times d W.
+
+Now we merge the two halves.
+
+The particles are carried by the flow, but also shaken by randomness.
+
+Together, they form an Ito process:
+
+d X equals alpha of x and t times d t,
+
+plus square root beta of t times d W.
+
+This is a compact way to say:
+
+part deterministic motion,
+
+part random diffusion,
+
+all happening continuously in time.
+
+It is like a river with a little statistical caffeine added.
+
+And now the big question becomes:
+
+If individual particles follow this process, how does the entire probability density move?
+
+
+The answer is the Fokker-Planck equation.
+
+SDEs describe how individual samples move.
+
+Fokker-Planck describes how the whole probability density evolves.
+
+In the animation, the drift term and the diffusion term are assembled into a single equation.
+
+The density behaves like a fluid moving under a velocity field v:
+
+partial p over partial t,
+
+equals negative divergence of p times v.
+
+This means that probability mass is flowing through space.
+
+But now look at the velocity field:
+
+v of x and t,
+
+equals alpha of x and t,
+
+minus beta of t over two,
+
+times nabla log p of x and t.
+
+And there it is again.
+
+The score.
+
+nabla log p of x and t.
+
+The same score compass from the discrete story returns inside the continuous probability flow.
+
+This is the bridge between the two worlds.
+
+In discrete time, the score helped us step from noisy points toward higher probability.
+
+In continuous time, the score becomes part of the velocity field that moves the entire probability density.
+
+So Fokker-Planck is not just a terrifying equation with divergence symbols trying to ruin your afternoon.
+
+It is the law of motion for probability itself.
+
+It tells us how the cloud stretches, compresses, diffuses, and flows.
+
+And if probability can flow forward, then naturally, we ask:
+
+Can it flow backward?
+
+
+In the forward direction, probability spreads outward.
+
+Data becomes noise.
+
+The vector field points away from structure.
+
+The cloud becomes wider, softer, and less informative.
+
+Now freeze time.
+
+The arrows stop.
+
+The noisy cloud is suspended.
+
+And the score field appears.
+
+The time-reversal theorem, associated with Brian Anderson's 1982 work, tells us something subtle and powerful:
+
+Under suitable assumptions, the reverse process can also be described, in distribution, by another Ito process.
+
+The phrase "in distribution" matters.
+
+We are not physically rewinding every individual particle along the exact path it took.
+
+That would be a little too much to ask, and also suspiciously close to time travel.
+
+Instead, we are reversing the evolution of the probability distribution.
+
+The reverse dynamics gain a score-dependent force.
+
+This force counteracts the spreading caused by diffusion.
+
+In the animation, the forward vector field fades.
+
+The reverse arrows appear.
+
+The cloud that was spreading outward begins to bend back inward.
+
+The score acts like a steering force.
+
+It turns the flow away from pure noise and back toward regions of high probability.
+
+This is the continuous-time version of our earlier learned breadcrumbs.
+
+One tiny motion at a time, the probability cloud is guided back toward structure.
+
+
+All of this is beautiful on paper.
+
+But computers do not take infinitely small steps.
+
+Computers take finite steps, because a GPU also has a schedule and would like to go home eventually.
+
+So to approximate a continuous trajectory, we need numerical solvers.
+
+The simplest is Euler's method.
+
+At the current point, look at the direction, then step forward.
+
+y n plus one equals y n,
+
+plus h times f of t n and y n.
+
+The problem is that if the true curve bends, Euler can drift away quickly.
+
+In the animation, the red path shoots off the ideal curve.
+
+Euler is brave.
+
+Euler is simple.
+
+Euler is also occasionally overconfident.
+
+Runge-Kutta is more careful.
+
+RK4 sends out several slope estimates:
+
+k one, k two, k three, and k four.
+
+One looks at the beginning of the step.
+
+Two look around the middle.
+
+One looks near the end.
+
+Then RK4 combines them:
+
+y n plus one,
+
+equals y n plus h over six,
+
+times k one plus two k two plus two k three plus k four.
+
+Instead of trusting one direction, it averages several informed guesses.
+
+Visually, the RK4 path stays much closer to the ideal continuous trajectory than Euler.
+
+In diffusion models, especially in probability-flow or ODE-based views,
+
+numerical solvers like these approximate the path through time.
+
+The neural network provides the learned score or vector field.
+
+The solver decides how to step through it.
+
+So the model learns the geometry.
+
+The solver walks the geometry.
+
+And the final sample is the result of both.
+
+
+When everything works, diffusion feels almost magical.
+
+Noise becomes structure.
+
+A random cloud becomes an image.
+
+A meaningless starting point becomes something that looks like it came from the data distribution.
+
+But diffusion is not magic.
+
+The score field is learned.
+
+And learned fields can be wrong.
+
+If the neural network gives a bad direction,
+
+the numerical solver may follow it perfectly - and still go to the wrong place.
+
+That is the terrifying part: a very accurate solver following a bad compass is still just confidently lost.
+
+In the animation, one red arrow points the sample away from the data region.
+
+The solver follows it.
+
+The point leaves the safe probability terrain.
+
+The final image becomes distorted, unstable, or strange.
+
+These are failure cases.
+
+They remind us that diffusion models are chains of approximations:
+
+the reverse process is approximated,
+
+the score is approximated,
+
+the neural network is approximated,
+
+and the continuous path is approximated by numerical steps.
+
+And yet, when these approximations work together, the result is extraordinary.
+
+From Markov chains to score functions, from MSE to neural networks, from Ito processes to Fokker-Planck equations,
+
+the same idea keeps returning:
+
+Structure can be recovered by following the geometry of probability.
+
+Diffusion models do not physically reverse time.
+
+They learn a probabilistic path from noise back toward data.
+
+From noise to structure -
+
+that is the mathematics of diffusion.
+
+Thank you for watching.
+
+Forward is designed.
+
+Reverse is learned.
+
+And probability shows the way.

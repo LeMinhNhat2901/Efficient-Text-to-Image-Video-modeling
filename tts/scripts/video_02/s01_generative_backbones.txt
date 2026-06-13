@@ -1,0 +1,47 @@
+Let’s begin with the magic trick.
+
+A single line of text can generate a robot cooking in a kitchen.
+
+A robot painted as graffiti on a brick wall.
+
+A raccoon wearing formal clothes and a top hat.
+
+Or even a hyper-realistic alien pyramid landscape.
+
+And the strange part is not just that these images exist.
+
+The strange part is how natural it now feels.
+
+We type. The model imagines.
+
+But this story does not stop at static images.
+
+Once a system can generate key images from text, those images can become building blocks for video. Generate keyframes first, then refine motion with temporal and spatial super-resolution.
+
+And with the right 3D representation, text-to-image can also support text-to-3D systems, where image generation and NeRF-like representations work together to build objects in space.
+
+So text-to-image is not just one application.
+
+It is a centerpiece.
+
+It sits at the center of image generation, video generation, 3D generation, editing, super-resolution, and many other creative systems.
+
+But if we peel away the beautiful outputs and look underneath, most conditional generation pipelines rely on two major families of methods.
+
+The first is autoregressive generation.
+
+Build the output step by step, token by token — much like a language model predicts the next word.
+
+The second is diffusion-based generation.
+
+Start from noise, then gradually recover structure through a learned denoising process.
+
+One family builds.
+
+The other family cleans.
+
+And both need the same missing ingredient:
+
+a way to connect human language with visual meaning.
+
+Because before a model can generate an image from text, it must first understand where that text lives in the visual world.

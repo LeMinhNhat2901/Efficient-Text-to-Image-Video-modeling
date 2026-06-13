@@ -1,0 +1,71 @@
+The rise of text-to-image generation was not a single invention.
+
+It was a puzzle assembled over many years.
+
+U-Net and diffusion gave us powerful tools for reconstruction and denoising.
+
+Transformers gave us a way to model long-range dependencies.
+
+VQGAN helped turn images into discrete visual tokens.
+
+DALL-E and latent diffusion models showed how these pieces could become real generative systems.
+
+But one puzzle piece is especially important for connecting text and image:
+
+CLIP.
+
+Before CLIP, vision models were already good at learning feature spaces.
+
+Images containing similar objects — or similar semantic structure — tend to live close to each other.
+
+A dog, a wolf, and another dog photographed from a different angle may not be identical images, but their features are related. In embedding space, they begin to form neighborhoods.
+
+That is already powerful.
+
+But image features alone are not enough.
+
+Text still lives in another universe.
+
+The phrase “autonomous car” is not an image.
+
+It has no pixels, no edges, no texture, no color.
+
+So the question becomes:
+
+How do we place language and vision into the same mathematical space?
+
+CLIP and ALIGN solve this with an image-text co-embedding space.
+
+One encoder maps images into vectors.
+
+Another encoder maps text into vectors.
+
+During training, matching image-text pairs are pulled closer together, while mismatched pairs are pushed apart.
+
+This is the idea behind contrastive learning.
+
+Inside each batch, the model compares every image with every text.
+
+The correct pairs sit on the diagonal of the similarity matrix.
+
+Training pushes those diagonal scores up, and pushes the wrong matches down.
+
+Over time, language becomes a coordinate system for vision.
+
+A prompt is no longer just a string of characters.
+
+It becomes an address.
+
+Not an image yet — but an address pointing to where an image should live in visual space.
+
+And that is the first cornerstone.
+
+The model now knows where the prompt belongs.
+
+But it still has not created a single pixel.
+
+So the next question is even more important:
+
+How should an image be represented so that a machine can actually write it out?
+
+That brings us to visual words, image tokenization, and VQGAN.

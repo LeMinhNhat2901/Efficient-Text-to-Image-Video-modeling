@@ -1,0 +1,33 @@
+A few years ago, if you wanted an image, you needed a camera, a designer, or a lot of patience.
+
+Today, you type a sentence.
+
+And somehow, a machine turns that sentence into pixels.
+
+Not just random pixels — but structured, colorful, meaningful images.
+
+Welcome back to our journey through generative artificial intelligence.
+
+In the previous part, through Richard Hartley’s lecture, we looked closely at the mathematics of diffusion models: the equations, the noise process, and the reverse path from chaos back to structure.
+
+But today, we take one step back.
+
+Instead of zooming into one equation, we zoom out and look at the full map.
+
+Based on Srikumar Ramalingam’s talk from Google Research, this chapter is about the cornerstones of the Text-to-Pixels journey.
+
+The big question is simple:
+
+How does language — something abstract, symbolic, and human — become an image made of millions of numbers?
+
+The answer is not one model.
+
+It is a chain of ideas: embeddings, visual words, Transformers, diffusion, latent spaces, and efficient inference.
+
+So let’s follow the path.
+
+From text…
+
+to meaning…
+
+to pixels.

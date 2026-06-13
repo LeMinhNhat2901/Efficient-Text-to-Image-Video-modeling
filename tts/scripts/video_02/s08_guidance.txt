@@ -1,0 +1,117 @@
+Now we know how diffusion can turn noise into an image.
+
+But there is still a problem.
+
+Noise is too free.
+
+The same random cloud could become a cat, a lion, a leopard, or something that looks like all three had a very confusing family reunion.
+
+So how do we make the sampling process go in the direction we want?
+
+This is where guidance enters the story.
+
+Guidance is the steering wheel of diffusion.
+
+Without guidance, the model may generate a plausible image.
+
+With guidance, we can push the reverse process toward a specific class, a specific prompt, or a specific visual meaning.
+
+The first idea is classifier guidance.
+
+We use an additional image classifier, trained to recognize images even when they are noisy.
+
+At every denoising step, the classifier looks at x_t and asks:
+
+Which direction would make this image more likely to belong to the desired class?
+
+If the label is “cats,” the classifier provides a gradient that nudges the reverse diffusion path toward cat-like images.
+
+Mathematically, we take the model’s original denoising direction and add a guidance vector from the classifier.
+
+That vector is multiplied by a scale factor, s.
+
+This scale controls the tradeoff.
+
+If s is small, the image may be more diverse, but less controlled.
+
+If s is large, the image follows the condition more strongly, but it may become less natural or less varied.
+
+So guidance scale is a steering wheel and a gas pedal at the same time.
+
+Useful, but dangerous if you floor it.
+
+The downside of classifier guidance is that it needs an extra classifier.
+
+And not just any classifier — one that works on noisy images.
+
+That is inconvenient.
+
+Classifier-free guidance solves this in a more elegant way.
+
+Instead of using an external classifier, we use the same diffusion model twice.
+
+During training, sometimes the model receives the condition, such as a label or text prompt.
+
+Sometimes the condition is dropped.
+
+So at sampling time, the model can make two predictions.
+
+One prediction with the condition:
+
+f of x_t and y.
+
+And one prediction without the condition:
+
+f of x_t and empty.
+
+The difference between these two predictions tells us what the condition is doing.
+
+It tells us the direction that moves the sample from “generic image” toward “image matching the condition.”
+
+Then we multiply that difference by the guidance scale s.
+
+This is classifier-free guidance.
+
+A good way to think about it is this:
+
+the model asks itself two questions.
+
+Where would I go without the prompt?
+
+And where would I go with the prompt?
+
+The difference between those answers becomes the steering direction.
+
+Finally, CLIP guidance brings language back into the center of the story.
+
+Instead of using a simple label like “cats,” we can use a richer text prompt, such as:
+
+a cyberpunk cat.
+
+CLIP maps the prompt into the shared image-text embedding space.
+
+The current image estimate is also mapped into that same space.
+
+Then guidance tries to increase the similarity between the image vector and the text vector.
+
+In other words, CLIP guidance pulls the sampling process toward images that better match the language prompt.
+
+Classifier guidance, classifier-free guidance, and CLIP guidance all create steering signals in different ways.
+
+But the goal is the same:
+
+turn denoising from an unconditional process into conditional generation.
+
+Diffusion gives us the road from noise to image.
+
+Guidance decides which road we take.
+
+And once we can generate the image we want, one question naturally comes next:
+
+Can we do it faster?
+
+Can we do it cheaper?
+
+Can we make the whole process lighter?
+
+That is why the next stop is Latent Diffusion.

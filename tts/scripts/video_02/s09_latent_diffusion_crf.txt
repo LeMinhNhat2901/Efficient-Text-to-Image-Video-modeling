@@ -1,0 +1,109 @@
+Diffusion gives us a powerful way to turn noise into images.
+
+But there is one very practical problem.
+
+Pixel space is huge.
+
+A 1024 by 1024 image with three color channels contains more than three million values.
+
+And if every denoising step has to process all of them, the model is basically trying to paint a mural with a toothbrush.
+
+Beautiful?
+
+Maybe.
+
+Efficient?
+
+Absolutely not.
+
+This is where Latent Diffusion makes a very clever move.
+
+Do not run diffusion directly on pixels.
+
+First, compress the image.
+
+An encoder takes the image from pixel space and maps it into a smaller latent space.
+
+This latent representation is not the full image in the raw pixel sense, but it still keeps the important information: layout, shape, texture, and semantic structure.
+
+Now the diffusion process happens inside this smaller latent space.
+
+Noise is added to the latent.
+
+The denoising U-Net works on the latent.
+
+The reverse process cleans the latent.
+
+Not x, the full pixel image.
+
+But z, the compressed representation.
+
+That is a huge difference.
+
+Because the space is smaller, each denoising step becomes cheaper, faster, and much more practical for high-resolution generation.
+
+Conditions can also enter this process.
+
+Text prompts, semantic maps, reference images, or other representations can guide the denoising network.
+
+In latent diffusion models, cross-attention is the mechanism that lets the prompt talk to the latent image as it is being formed.
+
+Once denoising is finished, the decoder maps the clean latent back into pixel space.
+
+So the model does not dream directly in pixels.
+
+It dreams in a compressed sketch.
+
+Then it decodes the dream into an image.
+
+But engineers have a very special personality trait:
+
+when something becomes faster, they immediately ask,
+
+“Can it be faster than faster?”
+
+That brings us to LatentCRF.
+
+Even in latent space, the denoising trajectory may still require many iterative steps.
+
+LatentCRF asks a practical question:
+
+If some of those steps are mainly refining the latent so it better matches the structure of natural image latents, can we replace several LDM inference iterations with a lighter CRF inference step?
+
+The idea is to operate directly on latent vectors.
+
+These latent vectors are not independent.
+
+A latent vector should be compatible with its neighbors.
+
+And sometimes, a whole group of latent vectors should work together to represent a larger structure.
+
+Pairwise interactions check local consistency.
+
+Do nearby latent vectors agree with each other?
+
+Higher-order interactions go beyond pairs.
+
+They ask whether a group of latents forms a coherent structure together.
+
+So instead of repeatedly applying the U-Net for every small correction, LatentCRF uses structured inference to make the latent space more consistent.
+
+The result shown in the slide is about 33 percent faster inference compared with Full LDM, with visually comparable quality on examples like peonies, a blue Porsche, a formal raccoon, and a cat portrait.
+
+The important point is not just the number.
+
+It is the pattern.
+
+The model is no longer blindly repeating denoising steps.
+
+It is exploiting structure.
+
+Latent space makes diffusion lighter.
+
+LatentCRF gives inference a shortcut.
+
+And yet, the race is not over.
+
+Because once we make the process faster, someone will always look at the GPU and say:
+
+“Nice. Now do it again, but cheaper.”

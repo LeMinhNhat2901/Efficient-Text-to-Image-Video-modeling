@@ -1,0 +1,105 @@
+The intuition is simple:
+
+add noise, then learn how to remove it.
+
+But to implement diffusion, we need to turn that intuition into mathematics.
+
+The forward process is a Markov chain.
+
+We start with a clean image, x_0, sampled from the data distribution.
+
+Then we create x_1, x_2, all the way to x_T, by adding Gaussian noise step by step.
+
+At every timestep, the transition has two jobs.
+
+First, it weakens the original signal.
+
+That is the square root of one minus beta_t, multiplied by x_{t minus one}.
+
+Second, it adds new Gaussian noise, controlled by beta_t.
+
+So beta_t is the noise schedule.
+
+It decides how aggressively we corrupt the image at each timestep.
+
+Early steps usually add only a small amount of noise.
+
+Later steps make noise dominate more and more, until the original image structure almost disappears.
+
+Geometrically, the mean is pulled toward zero, while the noise becomes stronger.
+
+If the total amount of noise is large enough, x_T becomes approximately a sample from a standard Gaussian distribution.
+
+In other words, after enough corruption, every image ends up looking like noise.
+
+Very democratic.
+
+But there is a practical problem.
+
+During training, we do not want to run hundreds or thousands of forward steps just to create one noisy image at timestep t.
+
+That would be painfully slow.
+
+Luckily, the math gives us a shortcut.
+
+We define alpha_t as one minus beta_t.
+
+Then alpha_bar_t is the product of all alpha values from step one to step t.
+
+With this single quantity, we can sample x_t directly from x_0.
+
+No long loop.
+
+No slow walk through time.
+
+Just a jump.
+
+The formula says:
+
+x_t equals square root of alpha_bar_t times x_0, plus square root of one minus alpha_bar_t times epsilon.
+
+This is the time jump that makes training efficient.
+
+Now the training objective becomes very clean.
+
+We sample an image x_0.
+
+We sample a timestep t.
+
+We sample noise epsilon.
+
+We construct x_t using the shortcut.
+
+Then we feed x_t and t into the neural network, epsilon_theta, and ask it to predict epsilon.
+
+The loss is simply the squared error between the true noise and the predicted noise.
+
+That is the simple diffusion loss.
+
+The training pseudocode is basically a loop:
+
+sample an image,
+
+sample a timestep,
+
+sample noise,
+
+create a noisy image,
+
+update the model to predict the noise.
+
+Sampling runs in the opposite direction.
+
+Start from x_T, sampled from a standard Gaussian.
+
+Then loop backward from T to one.
+
+At each step, predict the noise and take one reverse step toward a cleaner image.
+
+At the end of the loop, what began as pure noise becomes an image with structure.
+
+That is the mathematical engine of diffusion:
+
+a carefully designed destruction process,
+
+and a learned path back.

@@ -1,0 +1,91 @@
+So far, we have followed one road:
+
+turn the image into tokens, then let a Transformer generate those tokens.
+
+Now, we take the second road.
+
+The road that begins with something that looks completely useless:
+
+noise.
+
+Diffusion starts with an idea that feels almost backwards.
+
+Instead of learning how to build an image from scratch, we first learn how to destroy one.
+
+Slowly.
+
+Carefully.
+
+Systematically.
+
+Take this clean image of a cat.
+
+At the first step, we add just a little Gaussian noise.
+
+At the next step, a little more.
+
+Then more.
+
+Edges begin to disappear.
+
+Textures fade.
+
+Shapes dissolve.
+
+And after enough steps, the image becomes almost pure static — like a broken television trying very hard to be modern art.
+
+This is the forward diffusion process.
+
+And the nice thing about this process is that we designed it.
+
+We know exactly how much noise we added.
+
+The real challenge is the reverse direction.
+
+How do we go from random noise back to something structured?
+
+How do we travel from chaos… back to a cat?
+
+Here is the important trick.
+
+In this formulation, the neural network is not directly trying to paint the clean image in one shot.
+
+It is not sitting there thinking, “Ah yes, one perfect cat, coming right up.”
+
+Instead, it learns to predict the noise.
+
+We give the model a noisy image, x_t, together with the timestep t.
+
+The model outputs an estimate of the noise that was added.
+
+If that estimate is good, we can subtract part of the noise away, and the image becomes slightly cleaner.
+
+Not perfect.
+
+Just slightly cleaner.
+
+And that is enough.
+
+Because if we repeat this many times, small improvements accumulate.
+
+Noise becomes shape.
+
+Shape becomes structure.
+
+Structure becomes image.
+
+The loss function is beautifully simple: compare the true noise epsilon with the predicted noise from the model.
+
+The closer they are, the better the model becomes at denoising.
+
+So during training, we start from a clean image, add noise, and ask the model to predict that noise.
+
+During sampling, we do the opposite.
+
+We start from Gaussian noise and repeatedly remove what the model thinks is noise.
+
+Step by step, the static begins to organize itself.
+
+Diffusion, in this sense, is not just image generation.
+
+It is the art of learning how to reverse destruction.

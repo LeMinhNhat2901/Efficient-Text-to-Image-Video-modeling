@@ -1,0 +1,133 @@
+Now that all the pieces are on the table, the final message becomes clear.
+
+The question is not only:
+
+Which model is stronger?
+
+The deeper question is:
+
+How do we represent images in the first place?
+
+We started from a prompt.
+
+Then we moved through co-embedding spaces, visual words, codebooks, Transformers, diffusion, guidance, latent spaces, and efficient inference.
+
+The Text-to-Pixels journey is not one magical box.
+
+It is a machine made of many layers.
+
+And the first big lesson is this:
+
+Image representation is the key.
+
+If we represent images as raw pixels, the model has to work in a massive space.
+
+Every detail is explicit.
+
+Every color value is there.
+
+Every denoising step is expensive.
+
+But if we represent images as latent vectors or discrete tokens, we compress the important information.
+
+We give the model a smaller, more structured space to work in.
+
+That is why representation keeps appearing again and again in this story.
+
+CLIP represents text and images in a shared embedding space.
+
+VQGAN represents images as discrete tokens.
+
+Latent diffusion represents images as compressed latent vectors.
+
+VAR represents image generation as a sequence of scales.
+
+Different representations open different doors.
+
+The second lesson is that architecture still matters.
+
+Diffusion models can be effective with U-Nets.
+
+They can also be pushed toward Transformer-based architectures.
+
+But architecture and representation work together.
+
+A powerful model in a bad space may still be inefficient.
+
+A smart representation can make the model’s job much easier.
+
+The third lesson is more uncomfortable.
+
+Beautiful generations are not free.
+
+They come from larger datasets, more compute, and increasingly expensive training.
+
+The slide reminds us of the scale jump from ImageNet, with about 1.2 million images, to LAION, with billions of images.
+
+And behind those images are many GPU and TPU hours.
+
+A lot of electricity.
+
+A lot of hardware.
+
+And probably at least one engineer staring at a training dashboard at 3 a.m. whispering,
+
+“Please do not crash.”
+
+Training is expensive.
+
+But inference is the cost that repeats.
+
+Every time a user types a prompt, the system has to generate again.
+
+If millions of users do this, inference cost becomes a central problem.
+
+That is why methods like MarkovGen, LatentCRF, SANA, and VAR are not small details.
+
+They are part of making text-to-image generation practical.
+
+Faster.
+
+Cheaper.
+
+More scalable.
+
+And this also explains why the tutorial does not end here.
+
+Sadeep’s part goes deeper into MarkovGen and CMMD, showing how structure and evaluation matter for efficient generation.
+
+Ameesh’s part continues toward spectral autoencoders and efficient video generation, moving beyond static images into time.
+
+So, Text-to-Pixels is not a single invention.
+
+It is a convergence.
+
+Alignment.
+
+Tokenization.
+
+Denoising.
+
+Guidance.
+
+Compression.
+
+Structured inference.
+
+Efficient generation.
+
+From text to vectors.
+
+From vectors to tokens or latents.
+
+From noise to structure.
+
+From structure to pixels.
+
+And from pixels, the road now expands toward video, 3D, and interactive worlds.
+
+The journey from language to images is already impressive.
+
+But it is also only the beginning.
+
+Thank you for watching.

@@ -1,0 +1,99 @@
+The ordering problem makes sequential image generation slow.
+
+If a model has to fill the image token by token, one step after another, it can feel like watching a printer from 1998.
+
+Accurate, maybe.
+
+Fast? Not exactly.
+
+So models like MaskGIT and Muse take a different route.
+
+Instead of predicting tokens in one fixed sequence, they mask many tokens and recover them through several rounds of parallel decoding.
+
+The image starts rough.
+
+Then the model fills in many missing parts at once.
+
+Then it refines again.
+
+And again.
+
+This is much faster than strict left-to-right generation.
+
+Muse is an important example of this idea: a masked generative Transformer for text-to-image generation.
+
+According to the slide, the Muse 3B model is about ten times faster than Parti or Imagen 3B on TPUv4.
+
+That is a serious speedup.
+
+But speed usually comes with a catch.
+
+When we reduce the number of decoding steps, the image may lose local consistency.
+
+Some tokens may not agree with their neighbors.
+
+The global idea may be right, but a few local regions can look slightly off — the visual equivalent of wearing a tuxedo with flip-flops.
+
+This is where MarkovGen brings an old idea back into the room.
+
+Markov Random Fields.
+
+Instead of asking the Transformer to do all the work, MarkovGen treats the token image as a structured prediction problem.
+
+Each token is a variable.
+
+Neighboring tokens are connected by local constraints.
+
+And the goal is to find a token assignment that is both likely according to the model and consistent across the image.
+
+The energy function has two main parts.
+
+The first is the unary cost.
+
+This cost penalizes a token if its selected label disagrees with what the model predicted.
+
+In simple terms: if the classifier says, “this token probably should not be label 42,” then choosing label 42 should be expensive.
+
+The second is the pairwise cost.
+
+This cost penalizes neighboring tokens if they are incompatible.
+
+For example, two adjacent regions should usually have reasonable continuity in texture, object boundaries, or local semantic structure.
+
+If two neighboring tokens clash, the energy goes up.
+
+Then MarkovGen uses MRF inference to minimize this energy and refine the token image.
+
+It is not replacing the generative model.
+
+It is acting like a structured clean-up step — a final pass that says, “Wait, these local pieces should agree with each other.”
+
+And this is the beautiful part.
+
+A classical idea from computer vision becomes useful again inside a modern text-to-image system.
+
+The result is a speedup over Muse without quality loss.
+
+In the table from the slide, Muse takes about 442 milliseconds, while MarkovGen reduces this to about 281 milliseconds.
+
+So the story is not just “new models replace old ideas.”
+
+The better story is:
+
+old ideas return when the problem needs structure.
+
+MRFs, CNNs, Transformers, codebooks, and masked decoding are not isolated inventions.
+
+They are pieces of the same machine.
+
+And by this point, we have followed one major road: image tokenization plus Transformer-based generation.
+
+But text-to-image has another road — the one that dominates many modern systems.
+
+Instead of filling tokens, it begins with noise.
+
+And then learns how to recover structure.
+
+Next stop:
+
+Diffusion models.

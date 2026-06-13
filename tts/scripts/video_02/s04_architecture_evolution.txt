@@ -1,0 +1,103 @@
+Now that images have become tokens, we face a new problem.
+
+Who is going to model the relationships between them?
+
+Because an image is not just a bag of patches.
+
+The eye depends on the face.
+
+The shadow depends on the light.
+
+A tiny corner of the image may depend on an object far away.
+
+Computer vision has been moving toward this problem for decades.
+
+At one stage, Markov Random Fields modeled images through local interactions.
+
+Each variable in a grid only talked to its neighbors.
+
+The model minimized an energy function: unary costs for individual labels, and pairwise costs for neighboring compatibility.
+
+It was local, structured, and elegant.
+
+Then came CNNs.
+
+CNNs became the workhorse of vision because they are very good at extracting local features hierarchically.
+
+Edges become textures.
+
+Textures become object parts.
+
+Object parts become larger visual structures.
+
+But images are not only local.
+
+Sometimes, a patch in the top-left corner needs to communicate with a patch in the bottom-right corner.
+
+The color of the sky affects the lighting on the car.
+
+The position of one eye affects the position of the other.
+
+This is where Transformers become important.
+
+With attention, one token can directly interact with another token far away.
+
+Vision Transformers take an image, split it into patches, turn each patch into a token, add positional embeddings, and pass the whole sequence through Transformer layers.
+
+With VQGAN, this becomes especially powerful.
+
+The encoder, decoder, and codebook turn image synthesis into a sequence prediction problem.
+
+A Transformer can now generate image tokens.
+
+And if we provide a condition — text, depth, semantic maps, edge maps, or a low-resolution image — the model can synthesize an image guided by that condition.
+
+So at first, it sounds simple.
+
+We have visual tokens.
+
+We have Transformers.
+
+Just generate the next token, right?
+
+Well… almost.
+
+There is one very annoying problem.
+
+Images are two-dimensional.
+
+Language has a natural order.
+
+Word one comes before word two.
+
+The sentence moves forward.
+
+But an image is a grid.
+
+There is no obvious “first patch” and “next patch.”
+
+Should we scan from left to right?
+
+Top to bottom?
+
+Spiral inward?
+
+Shuffle the patches?
+
+Use some clever space-filling curve?
+
+Every ordering imposes a bias.
+
+And if we force a two-dimensional image into a one-dimensional sequence, the model may have to learn awkward dependencies that were never awkward in the image itself.
+
+This is the ordering problem.
+
+It reminds us that image generation is not simply “GPT, but for pictures.”
+
+Images have spatial structure.
+
+And the way we choose to linearize that structure affects training, inference speed, and image quality.
+
+So the next challenge is clear:
+
+Can we keep the power of token-based generation, without paying the full price of slow sequential decoding?

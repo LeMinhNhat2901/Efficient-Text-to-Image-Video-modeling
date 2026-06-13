@@ -1,0 +1,115 @@
+In the previous section, we gave text a place in visual space.
+
+A prompt became an address.
+
+But an address is not a building.
+
+To generate an image, the model still needs a way to actually construct pixels.
+
+And here comes the next question:
+
+What is the “vocabulary” of an image?
+
+Language models generate sentences by predicting tokens. One word, then the next word, then the next.
+
+So a tempting idea appears:
+
+Can we do the same thing for images?
+
+The problem is that images do not come with words pre-installed.
+
+An image is a continuous field of pixels. Hundreds of thousands, sometimes millions, of values.
+
+Asking a model to predict every pixel directly is possible in theory, but in practice, it is painfully expensive — like writing a novel one molecule of ink at a time.
+
+So instead of looking at individual pixels, we look at small visual regions.
+
+A dog’s eye.
+
+A nose.
+
+A patch of fur.
+
+The edge of a car.
+
+A piece of road texture.
+
+Each small part carries information.
+
+This is the intuition behind visual words.
+
+If we collect many image patches and place them into feature space, similar patches begin to form clusters.
+
+The center of each cluster becomes a prototype.
+
+A visual word.
+
+So instead of representing an image as raw pixels, we can describe it using a dictionary of reusable visual patterns.
+
+This idea also connects image search and image generation.
+
+If we can describe an image well enough with visual words, we are already one step closer to reconstructing it — or generating a new one.
+
+VQGAN takes this idea and turns it into a powerful architecture.
+
+A 256 by 256 RGB image goes into a CNN encoder.
+
+The encoder compresses it into a smaller spatial grid of continuous features.
+
+Then, at each location in that grid, the model looks into a codebook — a learned dictionary of visual vectors — and finds the nearest entry.
+
+That nearest entry becomes a discrete token.
+
+Not one token for the whole image, but one token for each position in the latent grid.
+
+The result is a token image: a small matrix of integers.
+
+In other words, the image has been translated from the continuous world of pixels into the discrete world of tokens.
+
+And this is the key move.
+
+Once an image becomes tokens, image generation starts to look much more like language modeling.
+
+But VQGAN is not just a tokenizer.
+
+It combines two strengths.
+
+CNNs are excellent at learning local, context-rich visual parts.
+
+Transformers are excellent at modeling long-range interactions between those parts.
+
+That makes VQGAN a useful bridge between vision and sequence modeling, and a backbone for many conditional generation systems.
+
+Training happens in two broad stages.
+
+First, the model learns the encoder, the decoder, and the codebook.
+
+The encoder compresses the image.
+
+The codebook quantizes the representation.
+
+The decoder reconstructs the image.
+
+Then, in the second stage, a Transformer can learn to synthesize these image tokens, possibly conditioned on text, depth, edges, semantic maps, or other signals.
+
+But for the codebook to work, the loss function has to do several jobs at once.
+
+The reconstruction loss makes sure the decoded image still looks like the original.
+
+The codebook and commitment losses pull the encoder outputs and codebook vectors toward each other, so quantization becomes stable.
+
+And because plain reconstruction can produce blurry results, VQGAN also uses perceptual and GAN losses.
+
+The discriminator acts like a visual judge.
+
+It asks: does this reconstructed image merely have the right numbers, or does it actually look real?
+
+The result is a major turning point.
+
+An image is no longer just a giant wall of pixels.
+
+It becomes a compact sequence of visual tokens.
+
+And once images become tokens, we can hand them to one of the most powerful machines in modern AI:
+
+Transformers.

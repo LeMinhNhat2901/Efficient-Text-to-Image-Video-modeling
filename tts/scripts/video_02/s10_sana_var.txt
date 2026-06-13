@@ -1,0 +1,113 @@
+At the beginning of this journey, we saw two major backbones for text-to-image generation.
+
+One side was diffusion-based.
+
+The other side was autoregressive.
+
+Now, near the end, both sides are evolving toward the same goal:
+
+faster generation,
+
+lighter computation,
+
+and better scaling.
+
+On the diffusion side, we have SANA.
+
+SANA represents a direction where high-resolution image synthesis is made more efficient with a Linear Diffusion Transformer.
+
+Instead of relying only on the traditional U-Net-style backbone, SANA redesigns the denoising engine around efficiency.
+
+The first key idea is deep compression.
+
+Many latent diffusion systems compress the image by about 8 times.
+
+SANA pushes this much further, using a 32 times deep compression autoencoder.
+
+A smaller latent representation means fewer latent tokens.
+
+Fewer tokens mean less computation.
+
+And less computation means the GPU gets to breathe for once.
+
+The second key idea is linear attention.
+
+Traditional attention often scales quadratically with the number of tokens.
+
+When the sequence length grows, the cost grows very quickly.
+
+It is the kind of curve that looks harmless at first, and then suddenly tries to leave the planet.
+
+Linear attention aims to make that cost grow much more gently.
+
+This helps the model handle larger images more efficiently.
+
+SANA also emphasizes Complex Human Instruction.
+
+In other words, the model is not just trying to follow short prompts like “a cat.”
+
+It is designed to handle richer, more detailed instructions.
+
+Together with VLM-based image captioning, Linear Attention, and Mix-FFN blocks, the goal is clear:
+
+high-resolution generation with less computational weight.
+
+While SANA improves the diffusion side, VAR rethinks the autoregressive side.
+
+Traditional autoregressive text generation predicts the next token.
+
+Image autoregressive models often try to predict the next image token.
+
+But VAR changes the question.
+
+It does not ask:
+
+“What is the next token?”
+
+It asks:
+
+“What should the next scale of the image look like?”
+
+This is next-scale prediction.
+
+The image begins at a very coarse resolution.
+
+Then the model predicts the next, more detailed scale.
+
+Then the next one.
+
+And the next one.
+
+The image becomes sharper step by step.
+
+This is closer to how humans often draw.
+
+First, a rough composition.
+
+Then the main shapes.
+
+Then object parts.
+
+Then texture and fine details.
+
+Instead of forcing a two-dimensional image into a long one-dimensional token sequence, VAR builds the image from coarse to fine.
+
+Not next token.
+
+Next scale.
+
+SANA and VAR come from different directions.
+
+One makes diffusion lighter with compression and linear attention.
+
+The other rethinks autoregressive generation through scale.
+
+But they are both answering the same engineering question:
+
+How do we generate high-quality images faster, cheaper, and at larger scale?
+
+And when these pieces are placed side by side, the final lesson becomes clear.
+
+The future is not only about bigger models.
+
+It is about smarter representations and more efficient paths through them.

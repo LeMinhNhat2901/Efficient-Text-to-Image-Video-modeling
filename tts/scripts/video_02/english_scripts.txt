@@ -1,0 +1,1147 @@
+A few years ago, if you wanted an image, you needed a camera, a designer, or a lot of patience.
+
+Today, you type a sentence.
+
+And somehow, a machine turns that sentence into pixels.
+
+Not just random pixels — but structured, colorful, meaningful images.
+
+Welcome back to our journey through generative artificial intelligence.
+
+In the previous part, through Richard Hartley’s lecture, we looked closely at the mathematics of diffusion models: the equations, the noise process, and the reverse path from chaos back to structure.
+
+But today, we take one step back.
+
+Instead of zooming into one equation, we zoom out and look at the full map.
+
+Based on Srikumar Ramalingam’s talk from Google Research, this chapter is about the cornerstones of the Text-to-Pixels journey.
+
+The big question is simple:
+
+How does language — something abstract, symbolic, and human — become an image made of millions of numbers?
+
+The answer is not one model.
+
+It is a chain of ideas: embeddings, visual words, Transformers, diffusion, latent spaces, and efficient inference.
+
+So let’s follow the path.
+
+From text…
+
+to meaning…
+
+to pixels.
+
+Let’s begin with the magic trick.
+
+A single line of text can generate a robot cooking in a kitchen.
+
+A robot painted as graffiti on a brick wall.
+
+A raccoon wearing formal clothes and a top hat.
+
+Or even a hyper-realistic alien pyramid landscape.
+
+And the strange part is not just that these images exist.
+
+The strange part is how natural it now feels.
+
+We type. The model imagines.
+
+But this story does not stop at static images.
+
+Once a system can generate key images from text, those images can become building blocks for video. Generate keyframes first, then refine motion with temporal and spatial super-resolution.
+
+And with the right 3D representation, text-to-image can also support text-to-3D systems, where image generation and NeRF-like representations work together to build objects in space.
+
+So text-to-image is not just one application.
+
+It is a centerpiece.
+
+It sits at the center of image generation, video generation, 3D generation, editing, super-resolution, and many other creative systems.
+
+But if we peel away the beautiful outputs and look underneath, most conditional generation pipelines rely on two major families of methods.
+
+The first is autoregressive generation.
+
+Build the output step by step, token by token — much like a language model predicts the next word.
+
+The second is diffusion-based generation.
+
+Start from noise, then gradually recover structure through a learned denoising process.
+
+One family builds.
+
+The other family cleans.
+
+And both need the same missing ingredient:
+
+a way to connect human language with visual meaning.
+
+Because before a model can generate an image from text, it must first understand where that text lives in the visual world.
+
+The rise of text-to-image generation was not a single invention.
+
+It was a puzzle assembled over many years.
+
+U-Net and diffusion gave us powerful tools for reconstruction and denoising.
+
+Transformers gave us a way to model long-range dependencies.
+
+VQGAN helped turn images into discrete visual tokens.
+
+DALL-E and latent diffusion models showed how these pieces could become real generative systems.
+
+But one puzzle piece is especially important for connecting text and image:
+
+CLIP.
+
+Before CLIP, vision models were already good at learning feature spaces.
+
+Images containing similar objects — or similar semantic structure — tend to live close to each other.
+
+A dog, a wolf, and another dog photographed from a different angle may not be identical images, but their features are related. In embedding space, they begin to form neighborhoods.
+
+That is already powerful.
+
+But image features alone are not enough.
+
+Text still lives in another universe.
+
+The phrase “autonomous car” is not an image.
+
+It has no pixels, no edges, no texture, no color.
+
+So the question becomes:
+
+How do we place language and vision into the same mathematical space?
+
+CLIP and ALIGN solve this with an image-text co-embedding space.
+
+One encoder maps images into vectors.
+
+Another encoder maps text into vectors.
+
+During training, matching image-text pairs are pulled closer together, while mismatched pairs are pushed apart.
+
+This is the idea behind contrastive learning.
+
+Inside each batch, the model compares every image with every text.
+
+The correct pairs sit on the diagonal of the similarity matrix.
+
+Training pushes those diagonal scores up, and pushes the wrong matches down.
+
+Over time, language becomes a coordinate system for vision.
+
+A prompt is no longer just a string of characters.
+
+It becomes an address.
+
+Not an image yet — but an address pointing to where an image should live in visual space.
+
+And that is the first cornerstone.
+
+The model now knows where the prompt belongs.
+
+But it still has not created a single pixel.
+
+So the next question is even more important:
+
+How should an image be represented so that a machine can actually write it out?
+
+That brings us to visual words, image tokenization, and VQGAN.
+
+In the previous section, we gave text a place in visual space.
+
+A prompt became an address.
+
+But an address is not a building.
+
+To generate an image, the model still needs a way to actually construct pixels.
+
+And here comes the next question:
+
+What is the “vocabulary” of an image?
+
+Language models generate sentences by predicting tokens. One word, then the next word, then the next.
+
+So a tempting idea appears:
+
+Can we do the same thing for images?
+
+The problem is that images do not come with words pre-installed.
+
+An image is a continuous field of pixels. Hundreds of thousands, sometimes millions, of values.
+
+Asking a model to predict every pixel directly is possible in theory, but in practice, it is painfully expensive — like writing a novel one molecule of ink at a time.
+
+So instead of looking at individual pixels, we look at small visual regions.
+
+A dog’s eye.
+
+A nose.
+
+A patch of fur.
+
+The edge of a car.
+
+A piece of road texture.
+
+Each small part carries information.
+
+This is the intuition behind visual words.
+
+If we collect many image patches and place them into feature space, similar patches begin to form clusters.
+
+The center of each cluster becomes a prototype.
+
+A visual word.
+
+So instead of representing an image as raw pixels, we can describe it using a dictionary of reusable visual patterns.
+
+This idea also connects image search and image generation.
+
+If we can describe an image well enough with visual words, we are already one step closer to reconstructing it — or generating a new one.
+
+VQGAN takes this idea and turns it into a powerful architecture.
+
+A 256 by 256 RGB image goes into a CNN encoder.
+
+The encoder compresses it into a smaller spatial grid of continuous features.
+
+Then, at each location in that grid, the model looks into a codebook — a learned dictionary of visual vectors — and finds the nearest entry.
+
+That nearest entry becomes a discrete token.
+
+Not one token for the whole image, but one token for each position in the latent grid.
+
+The result is a token image: a small matrix of integers.
+
+In other words, the image has been translated from the continuous world of pixels into the discrete world of tokens.
+
+And this is the key move.
+
+Once an image becomes tokens, image generation starts to look much more like language modeling.
+
+But VQGAN is not just a tokenizer.
+
+It combines two strengths.
+
+CNNs are excellent at learning local, context-rich visual parts.
+
+Transformers are excellent at modeling long-range interactions between those parts.
+
+That makes VQGAN a useful bridge between vision and sequence modeling, and a backbone for many conditional generation systems.
+
+Training happens in two broad stages.
+
+First, the model learns the encoder, the decoder, and the codebook.
+
+The encoder compresses the image.
+
+The codebook quantizes the representation.
+
+The decoder reconstructs the image.
+
+Then, in the second stage, a Transformer can learn to synthesize these image tokens, possibly conditioned on text, depth, edges, semantic maps, or other signals.
+
+But for the codebook to work, the loss function has to do several jobs at once.
+
+The reconstruction loss makes sure the decoded image still looks like the original.
+
+The codebook and commitment losses pull the encoder outputs and codebook vectors toward each other, so quantization becomes stable.
+
+And because plain reconstruction can produce blurry results, VQGAN also uses perceptual and GAN losses.
+
+The discriminator acts like a visual judge.
+
+It asks: does this reconstructed image merely have the right numbers, or does it actually look real?
+
+The result is a major turning point.
+
+An image is no longer just a giant wall of pixels.
+
+It becomes a compact sequence of visual tokens.
+
+And once images become tokens, we can hand them to one of the most powerful machines in modern AI:
+
+Transformers.
+
+Now that images have become tokens, we face a new problem.
+
+Who is going to model the relationships between them?
+
+Because an image is not just a bag of patches.
+
+The eye depends on the face.
+
+The shadow depends on the light.
+
+A tiny corner of the image may depend on an object far away.
+
+Computer vision has been moving toward this problem for decades.
+
+At one stage, Markov Random Fields modeled images through local interactions.
+
+Each variable in a grid only talked to its neighbors.
+
+The model minimized an energy function: unary costs for individual labels, and pairwise costs for neighboring compatibility.
+
+It was local, structured, and elegant.
+
+Then came CNNs.
+
+CNNs became the workhorse of vision because they are very good at extracting local features hierarchically.
+
+Edges become textures.
+
+Textures become object parts.
+
+Object parts become larger visual structures.
+
+But images are not only local.
+
+Sometimes, a patch in the top-left corner needs to communicate with a patch in the bottom-right corner.
+
+The color of the sky affects the lighting on the car.
+
+The position of one eye affects the position of the other.
+
+This is where Transformers become important.
+
+With attention, one token can directly interact with another token far away.
+
+Vision Transformers take an image, split it into patches, turn each patch into a token, add positional embeddings, and pass the whole sequence through Transformer layers.
+
+With VQGAN, this becomes especially powerful.
+
+The encoder, decoder, and codebook turn image synthesis into a sequence prediction problem.
+
+A Transformer can now generate image tokens.
+
+And if we provide a condition — text, depth, semantic maps, edge maps, or a low-resolution image — the model can synthesize an image guided by that condition.
+
+So at first, it sounds simple.
+
+We have visual tokens.
+
+We have Transformers.
+
+Just generate the next token, right?
+
+Well… almost.
+
+There is one very annoying problem.
+
+Images are two-dimensional.
+
+Language has a natural order.
+
+Word one comes before word two.
+
+The sentence moves forward.
+
+But an image is a grid.
+
+There is no obvious “first patch” and “next patch.”
+
+Should we scan from left to right?
+
+Top to bottom?
+
+Spiral inward?
+
+Shuffle the patches?
+
+Use some clever space-filling curve?
+
+Every ordering imposes a bias.
+
+And if we force a two-dimensional image into a one-dimensional sequence, the model may have to learn awkward dependencies that were never awkward in the image itself.
+
+This is the ordering problem.
+
+It reminds us that image generation is not simply “GPT, but for pictures.”
+
+Images have spatial structure.
+
+And the way we choose to linearize that structure affects training, inference speed, and image quality.
+
+So the next challenge is clear:
+
+Can we keep the power of token-based generation, without paying the full price of slow sequential decoding?
+
+The ordering problem makes sequential image generation slow.
+
+If a model has to fill the image token by token, one step after another, it can feel like watching a printer from 1998.
+
+Accurate, maybe.
+
+Fast? Not exactly.
+
+So models like MaskGIT and Muse take a different route.
+
+Instead of predicting tokens in one fixed sequence, they mask many tokens and recover them through several rounds of parallel decoding.
+
+The image starts rough.
+
+Then the model fills in many missing parts at once.
+
+Then it refines again.
+
+And again.
+
+This is much faster than strict left-to-right generation.
+
+Muse is an important example of this idea: a masked generative Transformer for text-to-image generation.
+
+According to the slide, the Muse 3B model is about ten times faster than Parti or Imagen 3B on TPUv4.
+
+That is a serious speedup.
+
+But speed usually comes with a catch.
+
+When we reduce the number of decoding steps, the image may lose local consistency.
+
+Some tokens may not agree with their neighbors.
+
+The global idea may be right, but a few local regions can look slightly off — the visual equivalent of wearing a tuxedo with flip-flops.
+
+This is where MarkovGen brings an old idea back into the room.
+
+Markov Random Fields.
+
+Instead of asking the Transformer to do all the work, MarkovGen treats the token image as a structured prediction problem.
+
+Each token is a variable.
+
+Neighboring tokens are connected by local constraints.
+
+And the goal is to find a token assignment that is both likely according to the model and consistent across the image.
+
+The energy function has two main parts.
+
+The first is the unary cost.
+
+This cost penalizes a token if its selected label disagrees with what the model predicted.
+
+In simple terms: if the classifier says, “this token probably should not be label 42,” then choosing label 42 should be expensive.
+
+The second is the pairwise cost.
+
+This cost penalizes neighboring tokens if they are incompatible.
+
+For example, two adjacent regions should usually have reasonable continuity in texture, object boundaries, or local semantic structure.
+
+If two neighboring tokens clash, the energy goes up.
+
+Then MarkovGen uses MRF inference to minimize this energy and refine the token image.
+
+It is not replacing the generative model.
+
+It is acting like a structured clean-up step — a final pass that says, “Wait, these local pieces should agree with each other.”
+
+And this is the beautiful part.
+
+A classical idea from computer vision becomes useful again inside a modern text-to-image system.
+
+The result is a speedup over Muse without quality loss.
+
+In the table from the slide, Muse takes about 442 milliseconds, while MarkovGen reduces this to about 281 milliseconds.
+
+So the story is not just “new models replace old ideas.”
+
+The better story is:
+
+old ideas return when the problem needs structure.
+
+MRFs, CNNs, Transformers, codebooks, and masked decoding are not isolated inventions.
+
+They are pieces of the same machine.
+
+And by this point, we have followed one major road: image tokenization plus Transformer-based generation.
+
+But text-to-image has another road — the one that dominates many modern systems.
+
+Instead of filling tokens, it begins with noise.
+
+And then learns how to recover structure.
+
+Next stop:
+
+Diffusion models.
+
+So far, we have followed one road:
+
+turn the image into tokens, then let a Transformer generate those tokens.
+
+Now, we take the second road.
+
+The road that begins with something that looks completely useless:
+
+noise.
+
+Diffusion starts with an idea that feels almost backwards.
+
+Instead of learning how to build an image from scratch, we first learn how to destroy one.
+
+Slowly.
+
+Carefully.
+
+Systematically.
+
+Take this clean image of a cat.
+
+At the first step, we add just a little Gaussian noise.
+
+At the next step, a little more.
+
+Then more.
+
+Edges begin to disappear.
+
+Textures fade.
+
+Shapes dissolve.
+
+And after enough steps, the image becomes almost pure static — like a broken television trying very hard to be modern art.
+
+This is the forward diffusion process.
+
+And the nice thing about this process is that we designed it.
+
+We know exactly how much noise we added.
+
+The real challenge is the reverse direction.
+
+How do we go from random noise back to something structured?
+
+How do we travel from chaos… back to a cat?
+
+Here is the important trick.
+
+In this formulation, the neural network is not directly trying to paint the clean image in one shot.
+
+It is not sitting there thinking, “Ah yes, one perfect cat, coming right up.”
+
+Instead, it learns to predict the noise.
+
+We give the model a noisy image, x_t, together with the timestep t.
+
+The model outputs an estimate of the noise that was added.
+
+If that estimate is good, we can subtract part of the noise away, and the image becomes slightly cleaner.
+
+Not perfect.
+
+Just slightly cleaner.
+
+And that is enough.
+
+Because if we repeat this many times, small improvements accumulate.
+
+Noise becomes shape.
+
+Shape becomes structure.
+
+Structure becomes image.
+
+The loss function is beautifully simple: compare the true noise epsilon with the predicted noise from the model.
+
+The closer they are, the better the model becomes at denoising.
+
+So during training, we start from a clean image, add noise, and ask the model to predict that noise.
+
+During sampling, we do the opposite.
+
+We start from Gaussian noise and repeatedly remove what the model thinks is noise.
+
+Step by step, the static begins to organize itself.
+
+Diffusion, in this sense, is not just image generation.
+
+It is the art of learning how to reverse destruction.
+
+The intuition is simple:
+
+add noise, then learn how to remove it.
+
+But to implement diffusion, we need to turn that intuition into mathematics.
+
+The forward process is a Markov chain.
+
+We start with a clean image, x_0, sampled from the data distribution.
+
+Then we create x_1, x_2, all the way to x_T, by adding Gaussian noise step by step.
+
+At every timestep, the transition has two jobs.
+
+First, it weakens the original signal.
+
+That is the square root of one minus beta_t, multiplied by x_{t minus one}.
+
+Second, it adds new Gaussian noise, controlled by beta_t.
+
+So beta_t is the noise schedule.
+
+It decides how aggressively we corrupt the image at each timestep.
+
+Early steps usually add only a small amount of noise.
+
+Later steps make noise dominate more and more, until the original image structure almost disappears.
+
+Geometrically, the mean is pulled toward zero, while the noise becomes stronger.
+
+If the total amount of noise is large enough, x_T becomes approximately a sample from a standard Gaussian distribution.
+
+In other words, after enough corruption, every image ends up looking like noise.
+
+Very democratic.
+
+But there is a practical problem.
+
+During training, we do not want to run hundreds or thousands of forward steps just to create one noisy image at timestep t.
+
+That would be painfully slow.
+
+Luckily, the math gives us a shortcut.
+
+We define alpha_t as one minus beta_t.
+
+Then alpha_bar_t is the product of all alpha values from step one to step t.
+
+With this single quantity, we can sample x_t directly from x_0.
+
+No long loop.
+
+No slow walk through time.
+
+Just a jump.
+
+The formula says:
+
+x_t equals square root of alpha_bar_t times x_0, plus square root of one minus alpha_bar_t times epsilon.
+
+This is the time jump that makes training efficient.
+
+Now the training objective becomes very clean.
+
+We sample an image x_0.
+
+We sample a timestep t.
+
+We sample noise epsilon.
+
+We construct x_t using the shortcut.
+
+Then we feed x_t and t into the neural network, epsilon_theta, and ask it to predict epsilon.
+
+The loss is simply the squared error between the true noise and the predicted noise.
+
+That is the simple diffusion loss.
+
+The training pseudocode is basically a loop:
+
+sample an image,
+
+sample a timestep,
+
+sample noise,
+
+create a noisy image,
+
+update the model to predict the noise.
+
+Sampling runs in the opposite direction.
+
+Start from x_T, sampled from a standard Gaussian.
+
+Then loop backward from T to one.
+
+At each step, predict the noise and take one reverse step toward a cleaner image.
+
+At the end of the loop, what began as pure noise becomes an image with structure.
+
+That is the mathematical engine of diffusion:
+
+a carefully designed destruction process,
+
+and a learned path back.
+
+Now we know how diffusion can turn noise into an image.
+
+But there is still a problem.
+
+Noise is too free.
+
+The same random cloud could become a cat, a lion, a leopard, or something that looks like all three had a very confusing family reunion.
+
+So how do we make the sampling process go in the direction we want?
+
+This is where guidance enters the story.
+
+Guidance is the steering wheel of diffusion.
+
+Without guidance, the model may generate a plausible image.
+
+With guidance, we can push the reverse process toward a specific class, a specific prompt, or a specific visual meaning.
+
+The first idea is classifier guidance.
+
+We use an additional image classifier, trained to recognize images even when they are noisy.
+
+At every denoising step, the classifier looks at x_t and asks:
+
+Which direction would make this image more likely to belong to the desired class?
+
+If the label is “cats,” the classifier provides a gradient that nudges the reverse diffusion path toward cat-like images.
+
+Mathematically, we take the model’s original denoising direction and add a guidance vector from the classifier.
+
+That vector is multiplied by a scale factor, s.
+
+This scale controls the tradeoff.
+
+If s is small, the image may be more diverse, but less controlled.
+
+If s is large, the image follows the condition more strongly, but it may become less natural or less varied.
+
+So guidance scale is a steering wheel and a gas pedal at the same time.
+
+Useful, but dangerous if you floor it.
+
+The downside of classifier guidance is that it needs an extra classifier.
+
+And not just any classifier — one that works on noisy images.
+
+That is inconvenient.
+
+Classifier-free guidance solves this in a more elegant way.
+
+Instead of using an external classifier, we use the same diffusion model twice.
+
+During training, sometimes the model receives the condition, such as a label or text prompt.
+
+Sometimes the condition is dropped.
+
+So at sampling time, the model can make two predictions.
+
+One prediction with the condition:
+
+f of x_t and y.
+
+And one prediction without the condition:
+
+f of x_t and empty.
+
+The difference between these two predictions tells us what the condition is doing.
+
+It tells us the direction that moves the sample from “generic image” toward “image matching the condition.”
+
+Then we multiply that difference by the guidance scale s.
+
+This is classifier-free guidance.
+
+A good way to think about it is this:
+
+the model asks itself two questions.
+
+Where would I go without the prompt?
+
+And where would I go with the prompt?
+
+The difference between those answers becomes the steering direction.
+
+Finally, CLIP guidance brings language back into the center of the story.
+
+Instead of using a simple label like “cats,” we can use a richer text prompt, such as:
+
+a cyberpunk cat.
+
+CLIP maps the prompt into the shared image-text embedding space.
+
+The current image estimate is also mapped into that same space.
+
+Then guidance tries to increase the similarity between the image vector and the text vector.
+
+In other words, CLIP guidance pulls the sampling process toward images that better match the language prompt.
+
+Classifier guidance, classifier-free guidance, and CLIP guidance all create steering signals in different ways.
+
+But the goal is the same:
+
+turn denoising from an unconditional process into conditional generation.
+
+Diffusion gives us the road from noise to image.
+
+Guidance decides which road we take.
+
+And once we can generate the image we want, one question naturally comes next:
+
+Can we do it faster?
+
+Can we do it cheaper?
+
+Can we make the whole process lighter?
+
+That is why the next stop is Latent Diffusion.
+
+Diffusion gives us a powerful way to turn noise into images.
+
+But there is one very practical problem.
+
+Pixel space is huge.
+
+A 1024 by 1024 image with three color channels contains more than three million values.
+
+And if every denoising step has to process all of them, the model is basically trying to paint a mural with a toothbrush.
+
+Beautiful?
+
+Maybe.
+
+Efficient?
+
+Absolutely not.
+
+This is where Latent Diffusion makes a very clever move.
+
+Do not run diffusion directly on pixels.
+
+First, compress the image.
+
+An encoder takes the image from pixel space and maps it into a smaller latent space.
+
+This latent representation is not the full image in the raw pixel sense, but it still keeps the important information: layout, shape, texture, and semantic structure.
+
+Now the diffusion process happens inside this smaller latent space.
+
+Noise is added to the latent.
+
+The denoising U-Net works on the latent.
+
+The reverse process cleans the latent.
+
+Not x, the full pixel image.
+
+But z, the compressed representation.
+
+That is a huge difference.
+
+Because the space is smaller, each denoising step becomes cheaper, faster, and much more practical for high-resolution generation.
+
+Conditions can also enter this process.
+
+Text prompts, semantic maps, reference images, or other representations can guide the denoising network.
+
+In latent diffusion models, cross-attention is the mechanism that lets the prompt talk to the latent image as it is being formed.
+
+Once denoising is finished, the decoder maps the clean latent back into pixel space.
+
+So the model does not dream directly in pixels.
+
+It dreams in a compressed sketch.
+
+Then it decodes the dream into an image.
+
+But engineers have a very special personality trait:
+
+when something becomes faster, they immediately ask,
+
+“Can it be faster than faster?”
+
+That brings us to LatentCRF.
+
+Even in latent space, the denoising trajectory may still require many iterative steps.
+
+LatentCRF asks a practical question:
+
+If some of those steps are mainly refining the latent so it better matches the structure of natural image latents, can we replace several LDM inference iterations with a lighter CRF inference step?
+
+The idea is to operate directly on latent vectors.
+
+These latent vectors are not independent.
+
+A latent vector should be compatible with its neighbors.
+
+And sometimes, a whole group of latent vectors should work together to represent a larger structure.
+
+Pairwise interactions check local consistency.
+
+Do nearby latent vectors agree with each other?
+
+Higher-order interactions go beyond pairs.
+
+They ask whether a group of latents forms a coherent structure together.
+
+So instead of repeatedly applying the U-Net for every small correction, LatentCRF uses structured inference to make the latent space more consistent.
+
+The result shown in the slide is about 33 percent faster inference compared with Full LDM, with visually comparable quality on examples like peonies, a blue Porsche, a formal raccoon, and a cat portrait.
+
+The important point is not just the number.
+
+It is the pattern.
+
+The model is no longer blindly repeating denoising steps.
+
+It is exploiting structure.
+
+Latent space makes diffusion lighter.
+
+LatentCRF gives inference a shortcut.
+
+And yet, the race is not over.
+
+Because once we make the process faster, someone will always look at the GPU and say:
+
+“Nice. Now do it again, but cheaper.”
+
+At the beginning of this journey, we saw two major backbones for text-to-image generation.
+
+One side was diffusion-based.
+
+The other side was autoregressive.
+
+Now, near the end, both sides are evolving toward the same goal:
+
+faster generation,
+
+lighter computation,
+
+and better scaling.
+
+On the diffusion side, we have SANA.
+
+SANA represents a direction where high-resolution image synthesis is made more efficient with a Linear Diffusion Transformer.
+
+Instead of relying only on the traditional U-Net-style backbone, SANA redesigns the denoising engine around efficiency.
+
+The first key idea is deep compression.
+
+Many latent diffusion systems compress the image by about 8 times.
+
+SANA pushes this much further, using a 32 times deep compression autoencoder.
+
+A smaller latent representation means fewer latent tokens.
+
+Fewer tokens mean less computation.
+
+And less computation means the GPU gets to breathe for once.
+
+The second key idea is linear attention.
+
+Traditional attention often scales quadratically with the number of tokens.
+
+When the sequence length grows, the cost grows very quickly.
+
+It is the kind of curve that looks harmless at first, and then suddenly tries to leave the planet.
+
+Linear attention aims to make that cost grow much more gently.
+
+This helps the model handle larger images more efficiently.
+
+SANA also emphasizes Complex Human Instruction.
+
+In other words, the model is not just trying to follow short prompts like “a cat.”
+
+It is designed to handle richer, more detailed instructions.
+
+Together with VLM-based image captioning, Linear Attention, and Mix-FFN blocks, the goal is clear:
+
+high-resolution generation with less computational weight.
+
+While SANA improves the diffusion side, VAR rethinks the autoregressive side.
+
+Traditional autoregressive text generation predicts the next token.
+
+Image autoregressive models often try to predict the next image token.
+
+But VAR changes the question.
+
+It does not ask:
+
+“What is the next token?”
+
+It asks:
+
+“What should the next scale of the image look like?”
+
+This is next-scale prediction.
+
+The image begins at a very coarse resolution.
+
+Then the model predicts the next, more detailed scale.
+
+Then the next one.
+
+And the next one.
+
+The image becomes sharper step by step.
+
+This is closer to how humans often draw.
+
+First, a rough composition.
+
+Then the main shapes.
+
+Then object parts.
+
+Then texture and fine details.
+
+Instead of forcing a two-dimensional image into a long one-dimensional token sequence, VAR builds the image from coarse to fine.
+
+Not next token.
+
+Next scale.
+
+SANA and VAR come from different directions.
+
+One makes diffusion lighter with compression and linear attention.
+
+The other rethinks autoregressive generation through scale.
+
+But they are both answering the same engineering question:
+
+How do we generate high-quality images faster, cheaper, and at larger scale?
+
+And when these pieces are placed side by side, the final lesson becomes clear.
+
+The future is not only about bigger models.
+
+It is about smarter representations and more efficient paths through them.
+
+Now that all the pieces are on the table, the final message becomes clear.
+
+The question is not only:
+
+Which model is stronger?
+
+The deeper question is:
+
+How do we represent images in the first place?
+
+We started from a prompt.
+
+Then we moved through co-embedding spaces, visual words, codebooks, Transformers, diffusion, guidance, latent spaces, and efficient inference.
+
+The Text-to-Pixels journey is not one magical box.
+
+It is a machine made of many layers.
+
+And the first big lesson is this:
+
+Image representation is the key.
+
+If we represent images as raw pixels, the model has to work in a massive space.
+
+Every detail is explicit.
+
+Every color value is there.
+
+Every denoising step is expensive.
+
+But if we represent images as latent vectors or discrete tokens, we compress the important information.
+
+We give the model a smaller, more structured space to work in.
+
+That is why representation keeps appearing again and again in this story.
+
+CLIP represents text and images in a shared embedding space.
+
+VQGAN represents images as discrete tokens.
+
+Latent diffusion represents images as compressed latent vectors.
+
+VAR represents image generation as a sequence of scales.
+
+Different representations open different doors.
+
+The second lesson is that architecture still matters.
+
+Diffusion models can be effective with U-Nets.
+
+They can also be pushed toward Transformer-based architectures.
+
+But architecture and representation work together.
+
+A powerful model in a bad space may still be inefficient.
+
+A smart representation can make the model’s job much easier.
+
+The third lesson is more uncomfortable.
+
+Beautiful generations are not free.
+
+They come from larger datasets, more compute, and increasingly expensive training.
+
+The slide reminds us of the scale jump from ImageNet, with about 1.2 million images, to LAION, with billions of images.
+
+And behind those images are many GPU and TPU hours.
+
+A lot of electricity.
+
+A lot of hardware.
+
+And probably at least one engineer staring at a training dashboard at 3 a.m. whispering,
+
+“Please do not crash.”
+
+Training is expensive.
+
+But inference is the cost that repeats.
+
+Every time a user types a prompt, the system has to generate again.
+
+If millions of users do this, inference cost becomes a central problem.
+
+That is why methods like MarkovGen, LatentCRF, SANA, and VAR are not small details.
+
+They are part of making text-to-image generation practical.
+
+Faster.
+
+Cheaper.
+
+More scalable.
+
+And this also explains why the tutorial does not end here.
+
+Sadeep’s part goes deeper into MarkovGen and CMMD, showing how structure and evaluation matter for efficient generation.
+
+Ameesh’s part continues toward spectral autoencoders and efficient video generation, moving beyond static images into time.
+
+So, Text-to-Pixels is not a single invention.
+
+It is a convergence.
+
+Alignment.
+
+Tokenization.
+
+Denoising.
+
+Guidance.
+
+Compression.
+
+Structured inference.
+
+Efficient generation.
+
+From text to vectors.
+
+From vectors to tokens or latents.
+
+From noise to structure.
+
+From structure to pixels.
+
+And from pixels, the road now expands toward video, 3D, and interactive worlds.
+
+The journey from language to images is already impressive.
+
+But it is also only the beginning.
+
+Thank you for watching.
