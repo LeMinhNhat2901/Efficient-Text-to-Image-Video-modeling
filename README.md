@@ -5,8 +5,7 @@ for a visual lecture series on the mathematics of diffusion models.
 
 Video 1 is built as fourteen scenes, from the forward Markov chain intuition to
 score functions, continuous-time SDEs, Fokker-Planck density flow, numerical
-solvers, and failure cases. Video 2 can now start from the same clean project
-shape without mixing new work into render caches.
+solvers, and failure cases. Video 2 explores generative backbones and diffusion architectures. Video 3 and Video 4 contain scenes from the CVPR 2025 tutorial on efficient text-to-image generation.
 
 ## Repo Layout
 
@@ -17,7 +16,9 @@ render.py                  Renders configured scenes and muxes narration when pr
 scenes/
   ├── common/              Shared visual language and configs.
   ├── video_01/            Video 1 source files.
-  └── video_02/            Video 2 source files.
+  ├── video_02/            Video 2 source files.
+  ├── video_03/            Video 3 source files (CVPR Tutorial Part 3).
+  └── video_04/            Video 4 source files (CVPR Tutorial Part 4).
 scripts/                   Utility scripts for precompute, TTS, muxing, and preview export.
 tts/                       Narration text, generation notes, and private voice references.
 assets/                    Checked-in source assets and attribution notes.
@@ -60,7 +61,13 @@ python render.py -ql --scene RoadmapOverview
 Render all configured Video 1 scenes:
 
 ```powershell
-python render.py -ql
+python render.py --video 1 -ql
+```
+
+Render Video 3 scenes:
+
+```powershell
+python render.py --video 3 -ql
 ```
 
 Use `-qm` for a medium check and `-qh` for a final-quality render:
@@ -146,22 +153,11 @@ file, and troubleshooting.
 
 Detailed timing and visual beats are in `docs/video1_pipeline.md`.
 
-## Starting Video 2
+## Videos 3 & 4 (CVPR Tutorial)
 
-Suggested convention:
-
-```text
-docs/video2_outline.md
-docs/video2_pipeline.md
-scenes/video_02/s00_<topic>.py
-scenes/video_02/s01_<topic>.py
-tts/scripts/video_02/s00_<topic>.txt
-tts/scripts/video_02/s01_<topic>.txt
-```
-
-When Video 2 scenes are ready, add them to the `SCENES` and `AUDIO_SCENES`
-lists in `render.py`, and add their paths to `scripts/concat_preview.py` if
-you want a combined preview.
+Video 3 and 4 scenes (from the CVPR tutorial) are organized in `scenes/video_03/` and `scenes/video_04/`.
+Their assets and audio are kept under `assets/video_0X/` and `tts/outputs/video_0X/`.
+Since their audio fragments are natively embedded in the Manim scenes via `self.add_sound()`, `render.py` will render them with audio gracefully without needing to post-mux single `.wav` files.
 
 ## Assets
 
