@@ -1,0 +1,2148 @@
+Look at this puppy.
+
+For now, it is perfectly recognizable.
+
+Two eyes, a nose, fur, background - a tiny, adorable bundle of pixels.
+
+Very scientific.
+
+Very cute.
+
+But now...
+
+let us do something slightly cruel...
+
+in the name of mathematics.
+
+At every time step, we add a little bit of random noise.
+
+Not too much at first.
+
+Just enough to disturb the image.
+
+Then a little more.
+
+And more.
+
+After many steps, the puppy disappears.
+
+What remains is not a dog.
+
+Not a face.
+
+Not even a bad drawing.
+
+It is just noise.
+
+This is the easy direction.
+
+If you add random noise to a structured object for long enough, structure breaks down.
+
+It is the same intuition behind entropy:
+
+when randomness keeps entering a system...
+
+order tends to dissolve.
+
+Now let us switch from pixels to geometry.
+
+Instead of thinking of this image as a picture, imagine it as a point in a very high-dimensional space.
+
+A small image may have thousands or millions of pixel values.
+
+In machine learning language, an image is just one point in a huge coordinate system.
+
+A very emotional point, if it is a puppy, but still a point.
+
+For visualization, we compress this idea into two dimensions.
+
+Suppose our clean data lives on a beautiful spiral-shaped structure.
+
+This is the data distribution:
+
+ordered, meaningful, and concentrated.
+
+Now we add noise step by step.
+
+The spiral begins to blur.
+
+The points spread out.
+
+The structure dissolves into a cloud.
+
+This direction is called the forward process.
+
+But diffusion models are built around the opposite question.
+
+Can we start from pure noise...
+
+and step by step...
+
+move back toward structure?
+
+Not necessarily to recover this exact original puppy - that would be too strong.
+
+Instead, can we learn a path from random noise...
+
+toward regions where realistic data is likely to live?
+
+That learned backward process is the heart of diffusion models.
+
+So the story of this video is simple:
+
+First, we destroy structure in a controlled way.
+
+Then, using probability, neural networks, and a surprising amount of beautiful mathematics...
+
+we learn how to come back.
+
+To make this destruction useful, we need to describe it mathematically.
+
+Let X t be the state of our data at time step t.
+
+The forward process says that X t is produced from the previous state X t minus one.
+
+A simple version looks like this:
+
+X t equals alpha t times X t minus one,
+
+plus square root beta t times G.
+
+This equation has two jobs.
+
+The first term, alpha t times X t minus one, keeps some of the old signal.
+
+Usually, alpha t is less than one, so it slightly shrinks the previous data.
+
+In plain English: it keeps the old image, but makes it a bit weaker.
+
+The second term, square root beta t times G, adds Gaussian noise.
+
+Here, G is independent Gaussian noise.
+
+The value beta t controls the noise variance, and square root beta t is the scale of the noise we actually add.
+
+So at every step, we do two things: preserve a little signal, inject a little randomness.
+
+If this sounds like carefully destroying your data, that is exactly what it is.
+
+We are not smashing the image with a hammer.
+
+We are dissolving it with a pipette.
+
+Now look at the variance circle.
+
+The horizontal direction represents how much clean structure remains.
+
+The vertical direction represents how much noise we add.
+
+As time increases, the vector rotates away from the structure axis and toward the noise axis.
+
+The important idea is that the process is controlled.
+
+We do not want the data to explode into infinity.
+
+We want the signal to fade while the noise takes over in a mathematically predictable way.
+
+This is why the random walks stay inside a growing but controlled band of uncertainty.
+
+The trajectories look messy, but the distribution around them is not arbitrary.
+
+And because Gaussian noise behaves so nicely, we get a shortcut.
+
+Instead of simulating every tiny step from X zero to X t, we can jump directly:
+
+X t equals alpha bar t times X zero,
+
+plus square root beta bar t times G.
+
+Here, alpha bar t summarizes all the signal-preserving factors from the first step up to time t.
+
+This shortcut is extremely useful.
+
+During training, we can choose any time step t, create a noisy version immediately,
+
+and ask the model to learn how to undo it.
+
+So the forward process is not the hard part.
+
+We designed it.
+
+The real challenge is the backward process.
+
+Now let us look more carefully at the forward equation.
+
+There is a very important property hiding inside it.
+
+To produce X t, we only use X t minus one.
+
+We do not directly look at X t minus two, or X zero, or the entire history of the system.
+
+It is like a robot walking through a foggy maze with extremely short-term memory.
+
+At each step, the robot only says: "Where am I now?
+
+Great.
+
+Let me move from here." It does not open a full autobiography of every previous step.
+
+That would be dramatic, but unnecessary.
+
+This is the Markov property.
+
+It says:
+
+Once we know the current state,
+
+the distant past does not provide additional direct information about the next state.
+
+More formally:
+
+p of x t, given x zero through x t minus one,
+
+equals p of x t, given x t minus one.
+
+This does not mean the past is irrelevant in a philosophical sense.
+
+The past helped create x t minus one.
+
+But once x t minus one is known, that state already summarizes everything the process needs for the next step.
+
+In the animation, all older nodes fade away.
+
+A wall falls between the distant past and the present.
+
+Only the arrow from x t minus one to x t remains bright.
+
+This simple idea gives us a powerful factorization.
+
+The probability of the entire trajectory can be written as:
+
+p of x zero to T,
+
+equals p of x zero,
+
+times the product from t equals one to T,
+
+of p of x t given x t minus one.
+
+Instead of modeling one enormous transformation from clean data to pure noise, we model many small transitions.
+
+And that is exactly why diffusion models are trainable.
+
+They turn one impossible leap into a long sequence of tiny, manageable steps.
+
+Now comes the key question.
+
+If the forward Markov chain takes us from data to noise,
+
+can a reverse Markov chain take us from noise back to data?
+
+In symbols, can we describe transitions like this?
+
+q of x t minus one, given x t.
+
+In other words: if I am standing at a noisy state x t, what is the probability distribution over the previous,
+
+slightly cleaner state x t minus one?
+
+Theorem 2.2.5 says yes: the same joint distribution can be written in the reverse direction.
+
+And the tool that makes this possible is Bayes' rule.
+
+Forward probabilities and backward probabilities are connected.
+
+If we expand the full trajectory probability using Bayes' rule, a beautiful cancellation happens.
+
+At first, the expression looks terrifying - and mathematically, "terrifying" usually means "please wait,
+
+something will cancel."
+
+We get a long chain of fractions.
+
+Terms like q of x one, q of x two, and so on appear in both numerators and denominators.
+
+Then the telescoping begins.
+
+One term cancels.
+
+Then another.
+
+Then another.
+
+It is like watching a long line of dominoes politely remove themselves from the equation.
+
+And after all the cancellations, the reverse factorization remains:
+
+q of x zero to T,
+
+equals q of x T,
+
+times the product from t equals one to T,
+
+of q of x t minus one, given x t.
+
+This is a major turning point.
+
+It means the path from noise back to data can also be described as a Markov chain.
+
+But there is a catch - and in mathematics, the catch is usually where the PhD begins.
+
+The formula tells us the reverse conditionals exist.
+
+It does not tell us how to compute them in high-dimensional image space.
+
+For a tiny toy dataset, maybe we can calculate everything.
+
+But for a million-pixel image?
+
+Good luck writing down the full probability density by hand.
+
+You would need a very large notebook and possibly a snack.
+
+So the next question is not: "Does the reverse process exist?"
+
+It is:
+
+How do we learn it?
+
+Imagine being lost in a dark forest.
+
+In the fairy tale, Hansel and Gretel try to find their way back using breadcrumbs.
+
+In diffusion, we are also lost - but our forest is a high-dimensional cloud of noise.
+
+And our breadcrumbs are not made of bread.
+
+They are made of probability.
+
+Now look at this probability terrain.
+
+Bright regions are where data is likely to live.
+
+Dark regions are low-probability noise.
+
+In our two-dimensional toy example,
+
+the data forms something like a Swiss roll - a structured region inside a much larger space.
+
+A noisy point y falls into the dark region.
+
+What direction should it move?
+
+This is where the score function appears.
+
+nabla log p X of y.
+
+The score is a local compass.
+
+At the current point y, it points in the direction where log-probability increases fastest.
+
+Notice the word local.
+
+The score does not magically draw a straight line all the way home.
+
+It does not open Google Maps and say, "In 300 meters, turn left at the Gaussian."
+
+It only tells us the best infinitesimal direction from where we are right now.
+
+In the animation, one arrow appears at y.
+
+Then nearby arrows pulse into view.
+
+Finally, the whole vector field appears as a probability compass over the terrain.
+
+If we take a tiny step along the score, the point moves toward a region of higher probability.
+
+Repeat this many times, and the point begins to climb back toward the data structure.
+
+This is the intuition behind the reverse process:
+
+not one giant jump from noise to data, but many small probability-guided steps.
+
+The score is the compass.
+
+The data manifold is home.
+
+And the noisy point is just trying not to get eaten by birds.
+
+Now we need to turn this compass into an equation.
+
+Globally, the probability landscape is complicated.
+
+It bends, twists, folds, and generally behaves like a mathematical mountain range.
+
+But locally, if we zoom into a tiny neighborhood around y, the landscape becomes much simpler.
+
+This is the idea of local linear approximation.
+
+Inside the magnifying glass, the curved contour lines start to look almost straight.
+
+The complicated terrain becomes approximately a tilted plane.
+
+And in that small neighborhood, the theorem gives us a beautiful approximation:
+
+mu of X given y,
+
+is approximately y plus beta times nabla log p X of y.
+
+Let us unpack this.
+
+mu of X given y is the conditional mean - the average previous state that could have produced the noisy point y.
+
+The formula says:
+
+Start at the current point y.
+
+Look at the score direction.
+
+Take a small step in that direction.
+
+The result approximates the backward mean.
+
+The coefficient beta controls the step size.
+
+If beta is small, the step is short and stable.
+
+The local approximation remains trustworthy.
+
+If beta is too large, the point overshoots.
+
+It jumps past the region where the local linear picture was valid.
+
+In the animation, the stable step lands near the probability ridge,
+
+while the oversized step flies off like a student who clicked "submit" without reading the question.
+
+This is why diffusion uses many small steps.
+
+Small steps are easier to approximate.
+
+But now we hit the real wall.
+
+The formula requires nabla log p X of y.
+
+For a two-dimensional toy landscape, we can draw it.
+
+For real images with millions of dimensions, computing this score explicitly is essentially impossible.
+
+So the formula is beautiful.
+
+But it hides the hardest part:
+
+How do we get the score?
+
+That is where learning enters.
+
+Instead of explicitly computing the score everywhere, we train a neural network to solve a denoising problem.
+
+Here is the statistical miracle.
+
+Suppose we know a noisy observation y.
+
+There may be many possible cleaner states x that could have produced it.
+
+If the model must output one single prediction, what should it choose?
+
+Let us visualize the possibilities as points.
+
+Each possible x pulls on the prediction.
+
+If the prediction is too far left, many distances become large.
+
+If it is too far right, same problem.
+
+The best compromise is the center of mass of all possible x's conditioned on y.
+
+That center is:
+
+the expected value of X, given Y equals y.
+
+Now we turn this into training.
+
+We define a squared error loss:
+
+L of f theta,
+
+equals the expected squared distance between f theta of y and x.
+
+This is ordinary mean squared error.
+
+Nothing fancy.
+
+The kind of loss function that has been quietly doing homework since the early days of machine learning.
+
+But the theorem says something powerful:
+
+The function that minimizes this expected squared error is:
+
+f star of y equals the expected value of X, given Y equals y.
+
+So MSE does not just make predictions "close." Under ideal conditions, it learns the conditional mean.
+
+In the animation, the balance beam finds its center.
+
+Then it morphs into a parabola.
+
+A ball rolls down to the minimum.
+
+At the bottom, the formula appears:
+
+f star of y equals the expected value of X, given Y equals y.
+
+In diffusion, this becomes the learned backward mean:
+
+mu theta of y and t.
+
+This is very important.
+
+We are not saying the neural network becomes perfect.
+
+In practice, it learns an approximation.
+
+The score compass is estimated, not magically downloaded from the universe.
+
+But this approximation is enough.
+
+Instead of computing the impossible probability density directly, the network learns how to denoise.
+
+And by learning to denoise, it learns the direction back toward structure.
+
+So the compass gets absorbed into the neural network.
+
+Now we can write the training algorithm.
+
+Choose a timestep t.
+
+Take a sample from the cleaner previous state, which we can think of as x t minus one.
+
+Add forward noise to obtain a noisy state y equals x t.
+
+Then give y and t to the neural network.
+
+The network predicts:
+
+mu theta of y and t,
+
+a cleaner state, one step back.
+
+We compare this prediction to the true cleaner target using squared error.
+
+At first, the prediction may be very wrong.
+
+The loss meter is red.
+
+The reverse arrow points in a suspicious direction.
+
+Not ideal.
+
+The model is basically saying, "I think the way home is...
+
+through that wall."
+
+But after many updates, the prediction improves.
+
+The loss decreases.
+
+The arrow becomes more aligned with the true reverse direction.
+
+Repeat this over many samples and many noise levels, and the network learns a map of the probability terrain.
+
+During sampling, we start from pure noise.
+
+The model gives one small reverse step.
+
+Then another.
+
+Then another.
+
+Each step is like a learned breadcrumb.
+
+After many such steps, the noisy cloud moves back toward a structured data region.
+
+Again, this is not an exact physical rewind of one original image.
+
+It is a learned probabilistic path from noise toward high-probability data.
+
+So far, however, every step has been discrete.
+
+But what happens if we make the steps infinitely small?
+
+The breadcrumbs become a continuous path.
+
+And diffusion enters the world of stochastic differential equations.
+
+We now take the discrete reverse steps and make them denser.
+
+The gaps shrink.
+
+The ticks on the time axis divide again and again: half, quarter, eighth, sixteenth.
+
+Eventually, the separate breadcrumbs blur into a continuous curve.
+
+When the steps become infinitesimally small,
+
+the discrete noise term is replaced by a continuous random motion term:
+
+d W.
+
+This is the increment of a Wiener process.
+
+The Wiener process is the standard mathematical model for continuous random motion.
+
+It is the formal version of "this particle is jittering forever, and no, it is not just nervous."
+
+A pure noise process can be written simply as:
+
+d X equals square root beta of t, times d W.
+
+At the level of individual particles, the paths look random.
+
+Each particle wiggles in its own unpredictable way.
+
+But now we change perspective.
+
+Instead of following one particle, we follow the whole cloud.
+
+As the particles spread, we group them into a histogram.
+
+Then the histogram becomes a smooth density curve.
+
+This is the key shift:
+
+Individual sample paths are random.
+
+The evolution of the probability density is structured.
+
+And that density evolution is what the next equations describe.
+
+To understand continuous diffusion, imagine a thin layer of oil floating on a slow stream.
+
+Its motion has two separate components.
+
+On the left side, we have drift.
+
+Drift is deterministic.
+
+The water current pushes the oil particles along a velocity field.
+
+If the current curves, the particles curve.
+
+If the current compresses, probability mass accumulates.
+
+If it expands, probability spreads out.
+
+Mathematically, drift looks like:
+
+d X equals alpha of x and t, times d t.
+
+On the right side, we have pure diffusion.
+
+Even if the water is still, the oil particles do not stay perfectly fixed.
+
+Random microscopic motion makes them spread.
+
+They jitter, collide, and gradually move outward.
+
+This random part is written as:
+
+d X equals square root beta of t, times d W.
+
+Now we merge the two halves.
+
+The particles are carried by the flow, but also shaken by randomness.
+
+Together, they form an Ito process:
+
+d X equals alpha of x and t times d t,
+
+plus square root beta of t times d W.
+
+This is a compact way to say:
+
+part deterministic motion,
+
+part random diffusion,
+
+all happening continuously in time.
+
+It is like a river with a little statistical caffeine added.
+
+And now the big question becomes:
+
+If individual particles follow this process, how does the entire probability density move?
+
+The answer is the Fokker-Planck equation.
+
+SDEs describe how individual samples move.
+
+Fokker-Planck describes how the whole probability density evolves.
+
+In the animation, the drift term and the diffusion term are assembled into a single equation.
+
+The density behaves like a fluid moving under a velocity field v:
+
+partial p over partial t,
+
+equals negative divergence of p times v.
+
+This means that probability mass is flowing through space.
+
+But now look at the velocity field:
+
+v of x and t,
+
+equals alpha of x and t,
+
+minus beta of t over two,
+
+times nabla log p of x and t.
+
+And there it is again.
+
+The score.
+
+nabla log p of x and t.
+
+The same score compass from the discrete story returns inside the continuous probability flow.
+
+This is the bridge between the two worlds.
+
+In discrete time, the score helped us step from noisy points toward higher probability.
+
+In continuous time, the score becomes part of the velocity field that moves the entire probability density.
+
+So Fokker-Planck is not just a terrifying equation with divergence symbols trying to ruin your afternoon.
+
+It is the law of motion for probability itself.
+
+It tells us how the cloud stretches, compresses, diffuses, and flows.
+
+And if probability can flow forward, then naturally, we ask:
+
+Can it flow backward?
+
+In the forward direction, probability spreads outward.
+
+Data becomes noise.
+
+The vector field points away from structure.
+
+The cloud becomes wider, softer, and less informative.
+
+Now freeze time.
+
+The arrows stop.
+
+The noisy cloud is suspended.
+
+And the score field appears.
+
+The time-reversal theorem, associated with Brian Anderson's 1982 work, tells us something subtle and powerful:
+
+Under suitable assumptions, the reverse process can also be described, in distribution, by another Ito process.
+
+The phrase "in distribution" matters.
+
+We are not physically rewinding every individual particle along the exact path it took.
+
+That would be a little too much to ask, and also suspiciously close to time travel.
+
+Instead, we are reversing the evolution of the probability distribution.
+
+The reverse dynamics gain a score-dependent force.
+
+This force counteracts the spreading caused by diffusion.
+
+In the animation, the forward vector field fades.
+
+The reverse arrows appear.
+
+The cloud that was spreading outward begins to bend back inward.
+
+The score acts like a steering force.
+
+It turns the flow away from pure noise and back toward regions of high probability.
+
+This is the continuous-time version of our earlier learned breadcrumbs.
+
+One tiny motion at a time, the probability cloud is guided back toward structure.
+
+All of this is beautiful on paper.
+
+But computers do not take infinitely small steps.
+
+Computers take finite steps, because a GPU also has a schedule and would like to go home eventually.
+
+So to approximate a continuous trajectory, we need numerical solvers.
+
+The simplest is Euler's method.
+
+At the current point, look at the direction, then step forward.
+
+y n plus one equals y n,
+
+plus h times f of t n and y n.
+
+The problem is that if the true curve bends, Euler can drift away quickly.
+
+In the animation, the red path shoots off the ideal curve.
+
+Euler is brave.
+
+Euler is simple.
+
+Euler is also occasionally overconfident.
+
+Runge-Kutta is more careful.
+
+RK4 sends out several slope estimates:
+
+k one, k two, k three, and k four.
+
+One looks at the beginning of the step.
+
+Two look around the middle.
+
+One looks near the end.
+
+Then RK4 combines them:
+
+y n plus one,
+
+equals y n plus h over six,
+
+times k one plus two k two plus two k three plus k four.
+
+Instead of trusting one direction, it averages several informed guesses.
+
+Visually, the RK4 path stays much closer to the ideal continuous trajectory than Euler.
+
+In diffusion models, especially in probability-flow or ODE-based views,
+
+numerical solvers like these approximate the path through time.
+
+The neural network provides the learned score or vector field.
+
+The solver decides how to step through it.
+
+So the model learns the geometry.
+
+The solver walks the geometry.
+
+And the final sample is the result of both.
+
+When everything works, diffusion feels almost magical.
+
+Noise becomes structure.
+
+A random cloud becomes an image.
+
+A meaningless starting point becomes something that looks like it came from the data distribution.
+
+But diffusion is not magic.
+
+The score field is learned.
+
+And learned fields can be wrong.
+
+If the neural network gives a bad direction,
+
+the numerical solver may follow it perfectly - and still go to the wrong place.
+
+That is the terrifying part: a very accurate solver following a bad compass is still just confidently lost.
+
+In the animation, one red arrow points the sample away from the data region.
+
+The solver follows it.
+
+The point leaves the safe probability terrain.
+
+The final image becomes distorted, unstable, or strange.
+
+These are failure cases.
+
+They remind us that diffusion models are chains of approximations:
+
+the reverse process is approximated,
+
+the score is approximated,
+
+the neural network is approximated,
+
+and the continuous path is approximated by numerical steps.
+
+And yet, when these approximations work together, the result is extraordinary.
+
+From Markov chains to score functions, from MSE to neural networks, from Ito processes to Fokker-Planck equations,
+
+the same idea keeps returning:
+
+Structure can be recovered by following the geometry of probability.
+
+Diffusion models do not physically reverse time.
+
+They learn a probabilistic path from noise back toward data.
+
+From noise to structure -
+
+that is the mathematics of diffusion.
+
+Thank you for watching.
+
+Forward is designed.
+
+Reverse is learned.
+
+And probability shows the way.
+
+A few years ago, if you wanted an image, you needed a camera, a designer, or a lot of patience.
+
+Today, you type a sentence.
+
+And somehow, a machine turns that sentence into pixels.
+
+Not just random pixels — but structured, colorful, meaningful images.
+
+Welcome back to our journey through generative artificial intelligence.
+
+In the previous part, through Richard Hartley’s lecture, we looked closely at the mathematics of diffusion models: the equations, the noise process, and the reverse path from chaos back to structure.
+
+But today, we take one step back.
+
+Instead of zooming into one equation, we zoom out and look at the full map.
+
+Based on Srikumar Ramalingam’s talk from Google Research, this chapter is about the cornerstones of the Text-to-Pixels journey.
+
+The big question is simple:
+
+How does language — something abstract, symbolic, and human — become an image made of millions of numbers?
+
+The answer is not one model.
+
+It is a chain of ideas: embeddings, visual words, Transformers, diffusion, latent spaces, and efficient inference.
+
+So let’s follow the path.
+
+From text…
+
+to meaning…
+
+to pixels.
+
+Let’s begin with the magic trick.
+
+A single line of text can generate a robot cooking in a kitchen.
+
+A robot painted as graffiti on a brick wall.
+
+A raccoon wearing formal clothes and a top hat.
+
+Or even a hyper-realistic alien pyramid landscape.
+
+And the strange part is not just that these images exist.
+
+The strange part is how natural it now feels.
+
+We type. The model imagines.
+
+But this story does not stop at static images.
+
+Once a system can generate key images from text, those images can become building blocks for video. Generate keyframes first, then refine motion with temporal and spatial super-resolution.
+
+And with the right 3D representation, text-to-image can also support text-to-3D systems, where image generation and NeRF-like representations work together to build objects in space.
+
+So text-to-image is not just one application.
+
+It is a centerpiece.
+
+It sits at the center of image generation, video generation, 3D generation, editing, super-resolution, and many other creative systems.
+
+But if we peel away the beautiful outputs and look underneath, most conditional generation pipelines rely on two major families of methods.
+
+The first is autoregressive generation.
+
+Build the output step by step, token by token — much like a language model predicts the next word.
+
+The second is diffusion-based generation.
+
+Start from noise, then gradually recover structure through a learned denoising process.
+
+One family builds.
+
+The other family cleans.
+
+And both need the same missing ingredient:
+
+a way to connect human language with visual meaning.
+
+Because before a model can generate an image from text, it must first understand where that text lives in the visual world.
+
+The rise of text-to-image generation was not a single invention.
+
+It was a puzzle assembled over many years.
+
+U-Net and diffusion gave us powerful tools for reconstruction and denoising.
+
+Transformers gave us a way to model long-range dependencies.
+
+VQGAN helped turn images into discrete visual tokens.
+
+DALL-E and latent diffusion models showed how these pieces could become real generative systems.
+
+But one puzzle piece is especially important for connecting text and image:
+
+CLIP.
+
+Before CLIP, vision models were already good at learning feature spaces.
+
+Images containing similar objects — or similar semantic structure — tend to live close to each other.
+
+A dog, a wolf, and another dog photographed from a different angle may not be identical images, but their features are related. In embedding space, they begin to form neighborhoods.
+
+That is already powerful.
+
+But image features alone are not enough.
+
+Text still lives in another universe.
+
+The phrase “autonomous car” is not an image.
+
+It has no pixels, no edges, no texture, no color.
+
+So the question becomes:
+
+How do we place language and vision into the same mathematical space?
+
+CLIP and ALIGN solve this with an image-text co-embedding space.
+
+One encoder maps images into vectors.
+
+Another encoder maps text into vectors.
+
+During training, matching image-text pairs are pulled closer together, while mismatched pairs are pushed apart.
+
+This is the idea behind contrastive learning.
+
+Inside each batch, the model compares every image with every text.
+
+The correct pairs sit on the diagonal of the similarity matrix.
+
+Training pushes those diagonal scores up, and pushes the wrong matches down.
+
+Over time, language becomes a coordinate system for vision.
+
+A prompt is no longer just a string of characters.
+
+It becomes an address.
+
+Not an image yet — but an address pointing to where an image should live in visual space.
+
+And that is the first cornerstone.
+
+The model now knows where the prompt belongs.
+
+But it still has not created a single pixel.
+
+So the next question is even more important:
+
+How should an image be represented so that a machine can actually write it out?
+
+That brings us to visual words, image tokenization, and VQGAN.
+
+In the previous section, we gave text a place in visual space.
+
+A prompt became an address.
+
+But an address is not a building.
+
+To generate an image, the model still needs a way to actually construct pixels.
+
+And here comes the next question:
+
+What is the “vocabulary” of an image?
+
+Language models generate sentences by predicting tokens. One word, then the next word, then the next.
+
+So a tempting idea appears:
+
+Can we do the same thing for images?
+
+The problem is that images do not come with words pre-installed.
+
+An image is a continuous field of pixels. Hundreds of thousands, sometimes millions, of values.
+
+Asking a model to predict every pixel directly is possible in theory, but in practice, it is painfully expensive — like writing a novel one molecule of ink at a time.
+
+So instead of looking at individual pixels, we look at small visual regions.
+
+A dog’s eye.
+
+A nose.
+
+A patch of fur.
+
+The edge of a car.
+
+A piece of road texture.
+
+Each small part carries information.
+
+This is the intuition behind visual words.
+
+If we collect many image patches and place them into feature space, similar patches begin to form clusters.
+
+The center of each cluster becomes a prototype.
+
+A visual word.
+
+So instead of representing an image as raw pixels, we can describe it using a dictionary of reusable visual patterns.
+
+This idea also connects image search and image generation.
+
+If we can describe an image well enough with visual words, we are already one step closer to reconstructing it — or generating a new one.
+
+VQGAN takes this idea and turns it into a powerful architecture.
+
+A 256 by 256 RGB image goes into a CNN encoder.
+
+The encoder compresses it into a smaller spatial grid of continuous features.
+
+Then, at each location in that grid, the model looks into a codebook — a learned dictionary of visual vectors — and finds the nearest entry.
+
+That nearest entry becomes a discrete token.
+
+Not one token for the whole image, but one token for each position in the latent grid.
+
+The result is a token image: a small matrix of integers.
+
+In other words, the image has been translated from the continuous world of pixels into the discrete world of tokens.
+
+And this is the key move.
+
+Once an image becomes tokens, image generation starts to look much more like language modeling.
+
+But VQGAN is not just a tokenizer.
+
+It combines two strengths.
+
+CNNs are excellent at learning local, context-rich visual parts.
+
+Transformers are excellent at modeling long-range interactions between those parts.
+
+That makes VQGAN a useful bridge between vision and sequence modeling, and a backbone for many conditional generation systems.
+
+Training happens in two broad stages.
+
+First, the model learns the encoder, the decoder, and the codebook.
+
+The encoder compresses the image.
+
+The codebook quantizes the representation.
+
+The decoder reconstructs the image.
+
+Then, in the second stage, a Transformer can learn to synthesize these image tokens, possibly conditioned on text, depth, edges, semantic maps, or other signals.
+
+But for the codebook to work, the loss function has to do several jobs at once.
+
+The reconstruction loss makes sure the decoded image still looks like the original.
+
+The codebook and commitment losses pull the encoder outputs and codebook vectors toward each other, so quantization becomes stable.
+
+And because plain reconstruction can produce blurry results, VQGAN also uses perceptual and GAN losses.
+
+The discriminator acts like a visual judge.
+
+It asks: does this reconstructed image merely have the right numbers, or does it actually look real?
+
+The result is a major turning point.
+
+An image is no longer just a giant wall of pixels.
+
+It becomes a compact sequence of visual tokens.
+
+And once images become tokens, we can hand them to one of the most powerful machines in modern AI:
+
+Transformers.
+
+Now that images have become tokens, we face a new problem.
+
+Who is going to model the relationships between them?
+
+Because an image is not just a bag of patches.
+
+The eye depends on the face.
+
+The shadow depends on the light.
+
+A tiny corner of the image may depend on an object far away.
+
+Computer vision has been moving toward this problem for decades.
+
+At one stage, Markov Random Fields modeled images through local interactions.
+
+Each variable in a grid only talked to its neighbors.
+
+The model minimized an energy function: unary costs for individual labels, and pairwise costs for neighboring compatibility.
+
+It was local, structured, and elegant.
+
+Then came CNNs.
+
+CNNs became the workhorse of vision because they are very good at extracting local features hierarchically.
+
+Edges become textures.
+
+Textures become object parts.
+
+Object parts become larger visual structures.
+
+But images are not only local.
+
+Sometimes, a patch in the top-left corner needs to communicate with a patch in the bottom-right corner.
+
+The color of the sky affects the lighting on the car.
+
+The position of one eye affects the position of the other.
+
+This is where Transformers become important.
+
+With attention, one token can directly interact with another token far away.
+
+Vision Transformers take an image, split it into patches, turn each patch into a token, add positional embeddings, and pass the whole sequence through Transformer layers.
+
+With VQGAN, this becomes especially powerful.
+
+The encoder, decoder, and codebook turn image synthesis into a sequence prediction problem.
+
+A Transformer can now generate image tokens.
+
+And if we provide a condition — text, depth, semantic maps, edge maps, or a low-resolution image — the model can synthesize an image guided by that condition.
+
+So at first, it sounds simple.
+
+We have visual tokens.
+
+We have Transformers.
+
+Just generate the next token, right?
+
+Well… almost.
+
+There is one very annoying problem.
+
+Images are two-dimensional.
+
+Language has a natural order.
+
+Word one comes before word two.
+
+The sentence moves forward.
+
+But an image is a grid.
+
+There is no obvious “first patch” and “next patch.”
+
+Should we scan from left to right?
+
+Top to bottom?
+
+Spiral inward?
+
+Shuffle the patches?
+
+Use some clever space-filling curve?
+
+Every ordering imposes a bias.
+
+And if we force a two-dimensional image into a one-dimensional sequence, the model may have to learn awkward dependencies that were never awkward in the image itself.
+
+This is the ordering problem.
+
+It reminds us that image generation is not simply “GPT, but for pictures.”
+
+Images have spatial structure.
+
+And the way we choose to linearize that structure affects training, inference speed, and image quality.
+
+So the next challenge is clear:
+
+Can we keep the power of token-based generation, without paying the full price of slow sequential decoding?
+
+The ordering problem makes sequential image generation slow.
+
+If a model has to fill the image token by token, one step after another, it can feel like watching a printer from 1998.
+
+Accurate, maybe.
+
+Fast? Not exactly.
+
+So models like MaskGIT and Muse take a different route.
+
+Instead of predicting tokens in one fixed sequence, they mask many tokens and recover them through several rounds of parallel decoding.
+
+The image starts rough.
+
+Then the model fills in many missing parts at once.
+
+Then it refines again.
+
+And again.
+
+This is much faster than strict left-to-right generation.
+
+Muse is an important example of this idea: a masked generative Transformer for text-to-image generation.
+
+According to the slide, the Muse 3B model is about ten times faster than Parti or Imagen 3B on TPUv4.
+
+That is a serious speedup.
+
+But speed usually comes with a catch.
+
+When we reduce the number of decoding steps, the image may lose local consistency.
+
+Some tokens may not agree with their neighbors.
+
+The global idea may be right, but a few local regions can look slightly off — the visual equivalent of wearing a tuxedo with flip-flops.
+
+This is where MarkovGen brings an old idea back into the room.
+
+Markov Random Fields.
+
+Instead of asking the Transformer to do all the work, MarkovGen treats the token image as a structured prediction problem.
+
+Each token is a variable.
+
+Neighboring tokens are connected by local constraints.
+
+And the goal is to find a token assignment that is both likely according to the model and consistent across the image.
+
+The energy function has two main parts.
+
+The first is the unary cost.
+
+This cost penalizes a token if its selected label disagrees with what the model predicted.
+
+In simple terms: if the classifier says, “this token probably should not be label 42,” then choosing label 42 should be expensive.
+
+The second is the pairwise cost.
+
+This cost penalizes neighboring tokens if they are incompatible.
+
+For example, two adjacent regions should usually have reasonable continuity in texture, object boundaries, or local semantic structure.
+
+If two neighboring tokens clash, the energy goes up.
+
+Then MarkovGen uses MRF inference to minimize this energy and refine the token image.
+
+It is not replacing the generative model.
+
+It is acting like a structured clean-up step — a final pass that says, “Wait, these local pieces should agree with each other.”
+
+And this is the beautiful part.
+
+A classical idea from computer vision becomes useful again inside a modern text-to-image system.
+
+The result is a speedup over Muse without quality loss.
+
+In the table from the slide, Muse takes about 442 milliseconds, while MarkovGen reduces this to about 281 milliseconds.
+
+So the story is not just “new models replace old ideas.”
+
+The better story is:
+
+old ideas return when the problem needs structure.
+
+MRFs, CNNs, Transformers, codebooks, and masked decoding are not isolated inventions.
+
+They are pieces of the same machine.
+
+And by this point, we have followed one major road: image tokenization plus Transformer-based generation.
+
+But text-to-image has another road — the one that dominates many modern systems.
+
+Instead of filling tokens, it begins with noise.
+
+And then learns how to recover structure.
+
+Next stop:
+
+Diffusion models.
+
+So far, we have followed one road:
+
+turn the image into tokens, then let a Transformer generate those tokens.
+
+Now, we take the second road.
+
+The road that begins with something that looks completely useless:
+
+noise.
+
+Diffusion starts with an idea that feels almost backwards.
+
+Instead of learning how to build an image from scratch, we first learn how to destroy one.
+
+Slowly.
+
+Carefully.
+
+Systematically.
+
+Take this clean image of a cat.
+
+At the first step, we add just a little Gaussian noise.
+
+At the next step, a little more.
+
+Then more.
+
+Edges begin to disappear.
+
+Textures fade.
+
+Shapes dissolve.
+
+And after enough steps, the image becomes almost pure static — like a broken television trying very hard to be modern art.
+
+This is the forward diffusion process.
+
+And the nice thing about this process is that we designed it.
+
+We know exactly how much noise we added.
+
+The real challenge is the reverse direction.
+
+How do we go from random noise back to something structured?
+
+How do we travel from chaos… back to a cat?
+
+Here is the important trick.
+
+In this formulation, the neural network is not directly trying to paint the clean image in one shot.
+
+It is not sitting there thinking, “Ah yes, one perfect cat, coming right up.”
+
+Instead, it learns to predict the noise.
+
+We give the model a noisy image, x_t, together with the timestep t.
+
+The model outputs an estimate of the noise that was added.
+
+If that estimate is good, we can subtract part of the noise away, and the image becomes slightly cleaner.
+
+Not perfect.
+
+Just slightly cleaner.
+
+And that is enough.
+
+Because if we repeat this many times, small improvements accumulate.
+
+Noise becomes shape.
+
+Shape becomes structure.
+
+Structure becomes image.
+
+The loss function is beautifully simple: compare the true noise epsilon with the predicted noise from the model.
+
+The closer they are, the better the model becomes at denoising.
+
+So during training, we start from a clean image, add noise, and ask the model to predict that noise.
+
+During sampling, we do the opposite.
+
+We start from Gaussian noise and repeatedly remove what the model thinks is noise.
+
+Step by step, the static begins to organize itself.
+
+Diffusion, in this sense, is not just image generation.
+
+It is the art of learning how to reverse destruction.
+
+The intuition is simple:
+
+add noise, then learn how to remove it.
+
+But to implement diffusion, we need to turn that intuition into mathematics.
+
+The forward process is a Markov chain.
+
+We start with a clean image, x_0, sampled from the data distribution.
+
+Then we create x_1, x_2, all the way to x_T, by adding Gaussian noise step by step.
+
+At every timestep, the transition has two jobs.
+
+First, it weakens the original signal.
+
+That is the square root of one minus beta_t, multiplied by x_{t minus one}.
+
+Second, it adds new Gaussian noise, controlled by beta_t.
+
+So beta_t is the noise schedule.
+
+It decides how aggressively we corrupt the image at each timestep.
+
+Early steps usually add only a small amount of noise.
+
+Later steps make noise dominate more and more, until the original image structure almost disappears.
+
+Geometrically, the mean is pulled toward zero, while the noise becomes stronger.
+
+If the total amount of noise is large enough, x_T becomes approximately a sample from a standard Gaussian distribution.
+
+In other words, after enough corruption, every image ends up looking like noise.
+
+Very democratic.
+
+But there is a practical problem.
+
+During training, we do not want to run hundreds or thousands of forward steps just to create one noisy image at timestep t.
+
+That would be painfully slow.
+
+Luckily, the math gives us a shortcut.
+
+We define alpha_t as one minus beta_t.
+
+Then alpha_bar_t is the product of all alpha values from step one to step t.
+
+With this single quantity, we can sample x_t directly from x_0.
+
+No long loop.
+
+No slow walk through time.
+
+Just a jump.
+
+The formula says:
+
+x_t equals square root of alpha_bar_t times x_0, plus square root of one minus alpha_bar_t times epsilon.
+
+This is the time jump that makes training efficient.
+
+Now the training objective becomes very clean.
+
+We sample an image x_0.
+
+We sample a timestep t.
+
+We sample noise epsilon.
+
+We construct x_t using the shortcut.
+
+Then we feed x_t and t into the neural network, epsilon_theta, and ask it to predict epsilon.
+
+The loss is simply the squared error between the true noise and the predicted noise.
+
+That is the simple diffusion loss.
+
+The training pseudocode is basically a loop:
+
+sample an image,
+
+sample a timestep,
+
+sample noise,
+
+create a noisy image,
+
+update the model to predict the noise.
+
+Sampling runs in the opposite direction.
+
+Start from x_T, sampled from a standard Gaussian.
+
+Then loop backward from T to one.
+
+At each step, predict the noise and take one reverse step toward a cleaner image.
+
+At the end of the loop, what began as pure noise becomes an image with structure.
+
+That is the mathematical engine of diffusion:
+
+a carefully designed destruction process,
+
+and a learned path back.
+
+Now we know how diffusion can turn noise into an image.
+
+But there is still a problem.
+
+Noise is too free.
+
+The same random cloud could become a cat, a lion, a leopard, or something that looks like all three had a very confusing family reunion.
+
+So how do we make the sampling process go in the direction we want?
+
+This is where guidance enters the story.
+
+Guidance is the steering wheel of diffusion.
+
+Without guidance, the model may generate a plausible image.
+
+With guidance, we can push the reverse process toward a specific class, a specific prompt, or a specific visual meaning.
+
+The first idea is classifier guidance.
+
+We use an additional image classifier, trained to recognize images even when they are noisy.
+
+At every denoising step, the classifier looks at x_t and asks:
+
+Which direction would make this image more likely to belong to the desired class?
+
+If the label is “cats,” the classifier provides a gradient that nudges the reverse diffusion path toward cat-like images.
+
+Mathematically, we take the model’s original denoising direction and add a guidance vector from the classifier.
+
+That vector is multiplied by a scale factor, s.
+
+This scale controls the tradeoff.
+
+If s is small, the image may be more diverse, but less controlled.
+
+If s is large, the image follows the condition more strongly, but it may become less natural or less varied.
+
+So guidance scale is a steering wheel and a gas pedal at the same time.
+
+Useful, but dangerous if you floor it.
+
+The downside of classifier guidance is that it needs an extra classifier.
+
+And not just any classifier — one that works on noisy images.
+
+That is inconvenient.
+
+Classifier-free guidance solves this in a more elegant way.
+
+Instead of using an external classifier, we use the same diffusion model twice.
+
+During training, sometimes the model receives the condition, such as a label or text prompt.
+
+Sometimes the condition is dropped.
+
+So at sampling time, the model can make two predictions.
+
+One prediction with the condition:
+
+f of x_t and y.
+
+And one prediction without the condition:
+
+f of x_t and empty.
+
+The difference between these two predictions tells us what the condition is doing.
+
+It tells us the direction that moves the sample from “generic image” toward “image matching the condition.”
+
+Then we multiply that difference by the guidance scale s.
+
+This is classifier-free guidance.
+
+A good way to think about it is this:
+
+the model asks itself two questions.
+
+Where would I go without the prompt?
+
+And where would I go with the prompt?
+
+The difference between those answers becomes the steering direction.
+
+Finally, CLIP guidance brings language back into the center of the story.
+
+Instead of using a simple label like “cats,” we can use a richer text prompt, such as:
+
+a cyberpunk cat.
+
+CLIP maps the prompt into the shared image-text embedding space.
+
+The current image estimate is also mapped into that same space.
+
+Then guidance tries to increase the similarity between the image vector and the text vector.
+
+In other words, CLIP guidance pulls the sampling process toward images that better match the language prompt.
+
+Classifier guidance, classifier-free guidance, and CLIP guidance all create steering signals in different ways.
+
+But the goal is the same:
+
+turn denoising from an unconditional process into conditional generation.
+
+Diffusion gives us the road from noise to image.
+
+Guidance decides which road we take.
+
+And once we can generate the image we want, one question naturally comes next:
+
+Can we do it faster?
+
+Can we do it cheaper?
+
+Can we make the whole process lighter?
+
+That is why the next stop is Latent Diffusion.
+
+Diffusion gives us a powerful way to turn noise into images.
+
+But there is one very practical problem.
+
+Pixel space is huge.
+
+A 1024 by 1024 image with three color channels contains more than three million values.
+
+And if every denoising step has to process all of them, the model is basically trying to paint a mural with a toothbrush.
+
+Beautiful?
+
+Maybe.
+
+Efficient?
+
+Absolutely not.
+
+This is where Latent Diffusion makes a very clever move.
+
+Do not run diffusion directly on pixels.
+
+First, compress the image.
+
+An encoder takes the image from pixel space and maps it into a smaller latent space.
+
+This latent representation is not the full image in the raw pixel sense, but it still keeps the important information: layout, shape, texture, and semantic structure.
+
+Now the diffusion process happens inside this smaller latent space.
+
+Noise is added to the latent.
+
+The denoising U-Net works on the latent.
+
+The reverse process cleans the latent.
+
+Not x, the full pixel image.
+
+But z, the compressed representation.
+
+That is a huge difference.
+
+Because the space is smaller, each denoising step becomes cheaper, faster, and much more practical for high-resolution generation.
+
+Conditions can also enter this process.
+
+Text prompts, semantic maps, reference images, or other representations can guide the denoising network.
+
+In latent diffusion models, cross-attention is the mechanism that lets the prompt talk to the latent image as it is being formed.
+
+Once denoising is finished, the decoder maps the clean latent back into pixel space.
+
+So the model does not dream directly in pixels.
+
+It dreams in a compressed sketch.
+
+Then it decodes the dream into an image.
+
+But engineers have a very special personality trait:
+
+when something becomes faster, they immediately ask,
+
+“Can it be faster than faster?”
+
+That brings us to LatentCRF.
+
+Even in latent space, the denoising trajectory may still require many iterative steps.
+
+LatentCRF asks a practical question:
+
+If some of those steps are mainly refining the latent so it better matches the structure of natural image latents, can we replace several LDM inference iterations with a lighter CRF inference step?
+
+The idea is to operate directly on latent vectors.
+
+These latent vectors are not independent.
+
+A latent vector should be compatible with its neighbors.
+
+And sometimes, a whole group of latent vectors should work together to represent a larger structure.
+
+Pairwise interactions check local consistency.
+
+Do nearby latent vectors agree with each other?
+
+Higher-order interactions go beyond pairs.
+
+They ask whether a group of latents forms a coherent structure together.
+
+So instead of repeatedly applying the U-Net for every small correction, LatentCRF uses structured inference to make the latent space more consistent.
+
+The result shown in the slide is about 33 percent faster inference compared with Full LDM, with visually comparable quality on examples like peonies, a blue Porsche, a formal raccoon, and a cat portrait.
+
+The important point is not just the number.
+
+It is the pattern.
+
+The model is no longer blindly repeating denoising steps.
+
+It is exploiting structure.
+
+Latent space makes diffusion lighter.
+
+LatentCRF gives inference a shortcut.
+
+And yet, the race is not over.
+
+Because once we make the process faster, someone will always look at the GPU and say:
+
+“Nice. Now do it again, but cheaper.”
+
+At the beginning of this journey, we saw two major backbones for text-to-image generation.
+
+One side was diffusion-based.
+
+The other side was autoregressive.
+
+Now, near the end, both sides are evolving toward the same goal:
+
+faster generation,
+
+lighter computation,
+
+and better scaling.
+
+On the diffusion side, we have SANA.
+
+SANA represents a direction where high-resolution image synthesis is made more efficient with a Linear Diffusion Transformer.
+
+Instead of relying only on the traditional U-Net-style backbone, SANA redesigns the denoising engine around efficiency.
+
+The first key idea is deep compression.
+
+Many latent diffusion systems compress the image by about 8 times.
+
+SANA pushes this much further, using a 32 times deep compression autoencoder.
+
+A smaller latent representation means fewer latent tokens.
+
+Fewer tokens mean less computation.
+
+And less computation means the GPU gets to breathe for once.
+
+The second key idea is linear attention.
+
+Traditional attention often scales quadratically with the number of tokens.
+
+When the sequence length grows, the cost grows very quickly.
+
+It is the kind of curve that looks harmless at first, and then suddenly tries to leave the planet.
+
+Linear attention aims to make that cost grow much more gently.
+
+This helps the model handle larger images more efficiently.
+
+SANA also emphasizes Complex Human Instruction.
+
+In other words, the model is not just trying to follow short prompts like “a cat.”
+
+It is designed to handle richer, more detailed instructions.
+
+Together with VLM-based image captioning, Linear Attention, and Mix-FFN blocks, the goal is clear:
+
+high-resolution generation with less computational weight.
+
+While SANA improves the diffusion side, VAR rethinks the autoregressive side.
+
+Traditional autoregressive text generation predicts the next token.
+
+Image autoregressive models often try to predict the next image token.
+
+But VAR changes the question.
+
+It does not ask:
+
+“What is the next token?”
+
+It asks:
+
+“What should the next scale of the image look like?”
+
+This is next-scale prediction.
+
+The image begins at a very coarse resolution.
+
+Then the model predicts the next, more detailed scale.
+
+Then the next one.
+
+And the next one.
+
+The image becomes sharper step by step.
+
+This is closer to how humans often draw.
+
+First, a rough composition.
+
+Then the main shapes.
+
+Then object parts.
+
+Then texture and fine details.
+
+Instead of forcing a two-dimensional image into a long one-dimensional token sequence, VAR builds the image from coarse to fine.
+
+Not next token.
+
+Next scale.
+
+SANA and VAR come from different directions.
+
+One makes diffusion lighter with compression and linear attention.
+
+The other rethinks autoregressive generation through scale.
+
+But they are both answering the same engineering question:
+
+How do we generate high-quality images faster, cheaper, and at larger scale?
+
+And when these pieces are placed side by side, the final lesson becomes clear.
+
+The future is not only about bigger models.
+
+It is about smarter representations and more efficient paths through them.
+
+Now that all the pieces are on the table, the final message becomes clear.
+
+The question is not only:
+
+Which model is stronger?
+
+The deeper question is:
+
+How do we represent images in the first place?
+
+We started from a prompt.
+
+Then we moved through co-embedding spaces, visual words, codebooks, Transformers, diffusion, guidance, latent spaces, and efficient inference.
+
+The Text-to-Pixels journey is not one magical box.
+
+It is a machine made of many layers.
+
+And the first big lesson is this:
+
+Image representation is the key.
+
+If we represent images as raw pixels, the model has to work in a massive space.
+
+Every detail is explicit.
+
+Every color value is there.
+
+Every denoising step is expensive.
+
+But if we represent images as latent vectors or discrete tokens, we compress the important information.
+
+We give the model a smaller, more structured space to work in.
+
+That is why representation keeps appearing again and again in this story.
+
+CLIP represents text and images in a shared embedding space.
+
+VQGAN represents images as discrete tokens.
+
+Latent diffusion represents images as compressed latent vectors.
+
+VAR represents image generation as a sequence of scales.
+
+Different representations open different doors.
+
+The second lesson is that architecture still matters.
+
+Diffusion models can be effective with U-Nets.
+
+They can also be pushed toward Transformer-based architectures.
+
+But architecture and representation work together.
+
+A powerful model in a bad space may still be inefficient.
+
+A smart representation can make the model’s job much easier.
+
+The third lesson is more uncomfortable.
+
+Beautiful generations are not free.
+
+They come from larger datasets, more compute, and increasingly expensive training.
+
+The slide reminds us of the scale jump from ImageNet, with about 1.2 million images, to LAION, with billions of images.
+
+And behind those images are many GPU and TPU hours.
+
+A lot of electricity.
+
+A lot of hardware.
+
+And probably at least one engineer staring at a training dashboard at 3 a.m. whispering,
+
+“Please do not crash.”
+
+Training is expensive.
+
+But inference is the cost that repeats.
+
+Every time a user types a prompt, the system has to generate again.
+
+If millions of users do this, inference cost becomes a central problem.
+
+That is why methods like MarkovGen, LatentCRF, SANA, and VAR are not small details.
+
+They are part of making text-to-image generation practical.
+
+Faster.
+
+Cheaper.
+
+More scalable.
+
+And this also explains why the tutorial does not end here.
+
+Sadeep’s part goes deeper into MarkovGen and CMMD, showing how structure and evaluation matter for efficient generation.
+
+Ameesh’s part continues toward spectral autoencoders and efficient video generation, moving beyond static images into time.
+
+So, Text-to-Pixels is not a single invention.
+
+It is a convergence.
+
+Alignment.
+
+Tokenization.
+
+Denoising.
+
+Guidance.
+
+Compression.
+
+Structured inference.
+
+Efficient generation.
+
+From text to vectors.
+
+From vectors to tokens or latents.
+
+From noise to structure.
+
+From structure to pixels.
+
+And from pixels, the road now expands toward video, 3D, and interactive worlds.
+
+The journey from language to images is already impressive.
+
+But it is also only the beginning.
+
+Thank you for watching.
+
+"Hello everyone. Welcome to the tutorial on Efficient Text-to-Image Generation via Structured Discrete Prediction, presented at CVPR 2025. This talk was originally given by Sadeep Jayasumana, a researcher at Google DeepMind."
+"When we look at the current landscape of image generation methods, there are two primary paradigms. On one side, we have Diffusion models, which power well-known systems like Stable Diffusion, Imagen, and Dall-E 2. On the other side, we have emerging Transformer-based models, such as Google's Parti and Muse."
+"This rivalry has sparked intense debate in the AI community. In fact, Elon Musk recently posted a poll asking which architecture will dominate by 2032. Surprisingly, as you can see, Transformers won the poll by a massive landslide, securing over 77 percent of the votes. Let's dive into why Transformers are gaining so much traction."
+"Before we dive into generating images, we first need to understand how transformer models process them. This is achieved through a crucial step called Image Tokenization. Instead of feeding millions of raw pixels directly into a model, the original continuous image is passed through a sophisticated Tokenizer. This encoder network drastically compresses the high-resolution R G B image into a compact, discrete grid of tokens, typically down to a sixteen by sixteen resolution. Each token is drawn from a predefined, finite vocabulary. By doing this, we effectively convert the complex visual data into a sequence of discrete symbols, allowing the Transformer architecture to process the image exactly like it processes words in a sentence."
+"With the image tokenized, how do early transformer models like Parti actually generate novel images? They rely on a method known as Autoregressive, or Sequential Decoding. As you can clearly see in this flamingo example, the model builds the image strictly one token at a time. It starts from the very top left corner and systematically works its way down to the bottom right. While this rigorous, pixel-by-pixel autoregressive approach ensures that the final image quality is exceptionally high and globally coherent, this sequential nature is also its biggest flaw. It is inherently bottlenecked and extremely slow, especially for high-resolution generation."
+"To completely overcome this severe speed limitation, more advanced models like Muse introduced a revolutionary technique called Scheduled Parallel Decoding. Instead of painstakingly predicting just one token at a time, the Muse architecture utilizes a bidirectional transformer that is capable of refining and predicting all tokens simultaneously. It starts with a completely masked canvas and iteratively unveils the most confident tokens in parallel over just a few rapid steps. Because of this massive parallelization, the Muse model achieves an impressive speedup. In fact, it is remarkably ten times faster than sequential autoregressive models like Parti, without sacrificing any visual quality."
+"So, what's the core issue we are trying to solve? Let's look at the limitation of independent prediction. When an image generator treats every single pixel independently without looking at the broader context, we end up with highly noisy results. Notice how the boundaries between the tree and the sky are jagged and fragmented? Independent pixel classification simply cannot capture global coherence."
+"This brings us to our primary motivation: The Combinatorial Explosion. To process an image like this high-definition picture of a lion efficiently, modern models compress the image into a grid of discrete tokens. Imagine laying a 16 by 16 grid over this image. Our vocabulary size for these discrete patches is typically around eight thousand and one hundred ninety two tokens."
+"Now, watch what happens to the math. For a tiny 2 by 2 patch, the search space is already on the order of ten to the power of fifteen. Expand that to a 3 by 3 patch, and we hit ten to the thirty-fifth. But for the full 16 by 16 grid, the mathematical possibilities explode to an astronomical ten to the power of one thousand and two! To put that in perspective, there are only about ten to the power of eighty atoms in the observable universe."
+"Out of this massive search space, only a tiny microscopic subset of token arrangements will form a valid, realistic image. Furthermore, highly confident tokens need to influence the prediction of nearby tokens to maintain structure. This leaves us with the ultimate question for this tutorial: How can we make generation both efficient and highly accurate amidst such complexity?"
+"Let's formalize this intuition using Markov Random Fields, or M R Fs. Instead of generating pixels one by one sequentially, we want to model the entire image simultaneously. First, we define a discrete random variable, X sub i, at each cell i of our image grid. You can think of each cell as a patch or a pixel in the image. Then, we connect these random variables with edges to form a vast random field. Each variable, X sub i, doesn't take continuous RGB values; instead, it takes a discrete value from our predefined vocabulary L. Ultimately, assigning a specific token to every single node in this random field, from X 1 all the way to X N, translates directly into generating our final image."
+"But how do we find the most realistic image out of all possible token combinations? In this framework, the probability of generating a specific image configuration is defined by a Boltzmann distribution. This distribution tells us that the probability is proportional to the exponential of negative Energy. Because our ultimate goal is to generate highly probable, photorealistic images, we want to maximize this Probability. Mathematically, because the exponential has a negative sign, maximizing the probability is identical to minimizing the Energy function, E of X. Therefore, the core challenge of image generation now becomes an energy minimization problem. We now need to define this energy function E of X very carefully, such that a photorealistic image will naturally drop into a low energy state, while a noisy, unrealistic image will have a very high energy penalty."
+"So, what exactly goes into this Energy function? In our model formulation, the total Energy, E of X, consists of two main components: a unary cost and a pairwise cost. Let's start with the unary cost. The unary cost asks a simple, localized question: does this single pixel look correct in isolation? Mathematically, we define this as the negative logit from a base classifier. In plain terms: you pay a heavy energy penalty if your assigned token label doesn't agree with what the classifier's local prediction expects to see at that exact location. It ensures that the base features of the image are grounded."
+"However, generating an image by only looking at individual pixels is exactly what led to the noisy, jagged results we saw earlier. Pixels must relate to their neighbors. This is where the pairwise cost comes into play. The pairwise cost evaluates the relationship between two connected variables, like X sub i and X sub j. The core idea here is that you pay a penalty if you assign incompatible labels to two neighboring pixels. For instance, putting a 'water' token right next to a 'fire' token might be highly improbable, thus incurring a huge pairwise penalty. This cost is crucial because it ensures spatial coherence, smoothness, and logical structure across the entire generated image."
+"Now, you might think this energy formulation looks identical to traditional semantic segmentation models. However, there are three massive differences when we apply Markov Random Fields to image generation. First, in our generative model, the graph is truly fully connected. In semantic segmentation, we usually only connect adjacent pixels. But here, every single token can influence every other token, capturing complex, long-range dependencies across the entire image. Second, the spatial relationships are not fixed. In segmentation, a pixel's relationship to its neighbor is static. In our approach, the spatial compatibility between any two tokens is dynamically computed based on the self-attention maps of a Transformer. Third, the label compatibilities are also not fixed. Instead of using a predefined matrix of label relationships, our model dynamically predicts how compatible two labels are by conditioning on the text prompt. This allows the model to adapt its generation rules based on exactly what you asked it to draw."
+"Welcome to the core of our solution: the inference and acceleration algorithm. First, let us look at the problem from a probabilistic perspective. The goal of image generation is essentially to converge to the manifold of real images. To achieve this, the system needs to optimize the conditional probability distribution, P of X equals x given I, based on an Energy function. However, directly computing this equation in a high-dimensional space is computationally prohibitive. Therefore, our first breakthrough is to approximate this distribution using a Factorized Q manifold. This breaks down the complex problem into computing individual independent tokens, simplifying the structure from a complex target manifold to a tractable approximated manifold that can be easily controlled by Markov Random Fields."
+"So how do these independent tokens communicate to create a consistent image? This is achieved through the Message Passing Algorithm. This algorithm evaluates two types of compatibilities. The first is Label compatibility, which analyzes the lexical probability through 8192-dimensional vectors using one-by-one convolutions, ensuring that neighboring tokens make logical sense together. The second is Spatial compatibility. As you can see in the three-by-three graph, it evaluates the relationship between a central token and its eight neighbors. In just a few short iterations, the algorithm continuously updates and propagates probabilities, creating a global consensus on the semantic meaning of the image."
+"Let's look at a stunning visual example of how Markov Random Fields correct token errors, using the Sydney Opera House as an example. Initially, the model generates an imperfect set of tokens. Looking at the matrix on the left, we can see erroneous tokens highlighted in red, such as 4999 or 1213. If we decode this grid directly, the resulting Opera House image would be distorted and contain many visual artifacts. However, when this grid passes through the MRF inference layer, combining both Spatial and Label compatibilities, the magic happens. The MRF identifies the anomalies, forcing token 4999 to become 204, and 1213 to become 789. Once this newly refreshed green matrix is decoded, it yields a sharp, perfectly coherent image of the Opera House."
+"Building upon this superior error-correction mechanism, we propose the Hybrid Generation Pipeline. The process begins with a text prompt fed into a massive Transformer model, like Muse. The Transformer handles the heavy lifting: it comprehends the semantics of the text and sketches the global structure of the image. At this stage, as seen in the Doge image on the left, the picture takes shape but still suffers from local visual artifacts because the Transformer is a bulky, slow model. Instead of forcing the Transformer to run multiple slow iterations, we pass this rough sketch to our ultra-lightweight MRF model. The MRF immediately scans and cleans up incompatible tokens at lightning speed, rendering the flawless Doge image on the right."
+"Finally, let's talk about real-world performance. This table compares the generation speed of the baseline Muse model versus our Hybrid architecture with MarkovGen. For the baseline Muse model, the total generation time takes 442 point 0 5 milliseconds. However, when combined with MarkovGen, we significantly reduce the base generation steps, and it only takes a tiny fraction of a millisecond for the MRF inference layer. Consequently, the total generation time drops significantly to just 281 point 0 3 milliseconds. You can clearly see this on the bar chart: the processing time is slashed from over 440 down to around 280 milliseconds. This breakthrough delivers an overall speedup of 1.5 times, while maintaining absolute image fidelity!"
+"While we have established that MarkovGen is significantly faster, you might be wondering: does this speed come at the cost of generation quality? The answer is a resounding no. In fact, it's the exact opposite. Let's look at some qualitative results. When we observe standard accelerated generation methods like the Early Exit Muse, we often encounter glaring visual artifacts. Notice how the eye of this corgi in the first step is visibly distorted and unnatural."
+"Furthermore, if we examine the background, the wall textures are highly inconsistent across the generation steps. Now, let's compare this to MarkovGen. By employing our novel continuous-time Markov Chain framework and iterative message passing, MarkovGen perfectly preserves these crucial structural details. The eye is rendered sharply, and the background texture remains highly consistent."
+"This superior performance is not just an isolated case; it extends consistently across various complex scenes. When we look at broader evaluation sets, such as these detailed robotic figures or the intricate clothing on these rabbits, the limitations of previous methods become even more apparent. The Early Exit Muse model suffers from a severe loss of structural integrity, producing blurry and ill-defined outputs when forced to generate quickly."
+"In stark contrast, MarkovGen effortlessly maintains enhanced sharpness, high fidelity, and correct structural proportions. And here is the most impressive part: it achieves this stunning level of detail while still being 1.5 times faster than the full, uncompressed Muse model. We are getting the best of both worlds: unprecedented speed without compromising an ounce of visual quality."
+"We observe the exact same pattern when dealing with highly structured geometric shapes or complex lighting scenarios. Take a look at this vintage Porsche and the illuminated Teddy Bear. While the baseline model struggles, creating wavy, broken brick walls and fuzzy ghosting artifacts around the bear's edges, MarkovGen easily corrects these issues, delivering crisp, flawless images that look completely natural."
+"Finally, qualitative observations are backed by rigorous quantitative metrics. When we conducted human preference evaluations, the results were overwhelming. MarkovGen is preferred by human judges 98.3 percent of the time when compared to the Early Exit Muse. More importantly, it even outperforms the heavy, computationally expensive Full Muse model by a massive margin, solidifying MarkovGen as the new state-of-the-art in efficient text-to-image generation."
+"The chart also reveals that Full Muse heavily beats Early Exit Muse at 92.5 percent, highlighting just how severe the quality drop is in standard early exiting. By contrast, MarkovGen achieves superior quality while retaining the speed benefits."
+"Welcome to the second part of this tutorial. Up until now, we've discussed the remarkable capabilities of discrete token-based models in generating high-quality images. However, to truly measure our progress, we need robust evaluation metrics. For years, the Fréchet Inception Distance, or FID, has been the gold standard for evaluating Text-to-Image models. But is it really doing a good job? Today, we are going to fundamentally rethink FID. At its core, evaluating a generative model is about comparing two probability distributions: the distribution of generated images, which we'll call P, and the distribution of real images, Q."
+"Mathematically, we want to compute the distance between these two complex distributions. The general Fréchet distance does exactly this by finding the optimal transport plan—essentially solving an optimization problem over all possible joint distributions. However, computing this in a high-dimensional image space is computationally intractable."
+"To make this computation feasible, the creators of FID introduced a massive simplification: the Gaussian Assumption. By assuming that the features extracted from both the real and generated images follow a multivariate normal—or Gaussian—distribution, the complex optimal transport problem magically collapses into a neat, closed-form equation using only the mean vectors and the covariance matrices of the features. This is the FID formula we all know and use today."
+"But this mathematical convenience comes at a steep cost. Let's break down its fundamental limitations. First, the feature space itself. FID relies on embeddings extracted from an Inception-V3 network that was pre-trained on the ImageNet dataset. ImageNet is heavily biased towards simple, object-centric images—like a single dog in the center of the frame. Modern Text-to-Image models generate incredibly complex, compositional scenes with multiple interacting subjects. Using Inception features to evaluate these rich generations is fundamentally mismatched."
+"The second major limitation lies in the covariance matrix estimation. The Inception feature space has 2048 dimensions. To compute the FID score, you must estimate a massive 2048-by-2048 covariance matrix. Statistically speaking, estimating a matrix of this magnitude requires a huge number of samples to avoid numerical instability. This makes FID incredibly sample-inefficient. If you evaluate FID on a small batch of images, your estimator will be highly biased and unreliable, making iterative model development painfully slow."
+"But here is the final, and most fatal flaw: Limitation number three. That foundational Gaussian assumption we discussed earlier? It is empirically false. When we extract Inception embeddings from real datasets—such as the COCO 30K dataset—and project them into 2D space using t-SNE, we do not see a smooth, bell-shaped multivariate Gaussian cluster. Instead, we see highly complex, multi-modal distributions with distinct separate clusters."
+"To prove this mathematically, we subjected these embeddings to rigorous multivariate normality tests. We ran Mardia’s Skewness Test, Mardia’s Kurtosis Test, and the Henze-Zirkler Test. The results were conclusive: every single statistical test unequivocally rejected the null hypothesis of multivariate normality, yielding a p-value of absolute zero."
+"Because the underlying distribution is not Gaussian, applying the closed-form Fréchet formula is mathematically unjustified. Consequently, FID is fundamentally a biased estimator. It is an inaccurate yardstick that misguides our evaluation of generative models."
+"If FID is fundamentally broken, what should we use instead? The answer is CMMD: the CLIP Maximum Mean Discrepancy metric. CMMD directly addresses every single flaw inherent in FID."
+"While FID uses outdated ImageNet features, CMMD leverages CLIP embeddings, which are explicitly trained to understand the rich, compositional relationship between text and images. While FID mathematically forces a false Gaussian assumption, CMMD uses the Maximum Mean Discrepancy framework, which is entirely distribution-free. And because it avoids estimating massive covariance matrices, CMMD is both sample-efficient and an unbiased estimator."
+"Beyond its theoretical superiority, CMMD dramatically accelerates the research workflow. Look at the runtime operations. Computing the Fréchet distance alone takes over 7000 milliseconds. In stark contrast, computing the MMD distance takes just 71 milliseconds. That is a 100x speedup in distance computation."
+"But the most important question is: Does the metric actually agree with human perception? In extensive blind tests where human evaluators were asked to judge image quality, the FID metric agreed with human preference a dismal 6.9% of the time. CMMD, on the other hand, achieved a staggering 92.5% agreement rate with human raters. CMMD is simply faster, more statistically robust, and vastly more aligned with what the human eye actually perceives."
+"To conclude this segment of our tutorial, let's summarize the key takeaways. First, we have seen that discrete token models integrate seamlessly with Large Language Model architectures, unlocking powerful auto-regressive and masked generative capabilities. Second, through models like MarkovGen, we demonstrated that Markov Random Field-based prediction is incredibly fast, allowing us to generate high-fidelity images in a fraction of the time. And finally, we have proven that the long-standing industry standard, FID, is deeply flawed; the community must transition to CMMD as the robust, unbiased evaluation metric of choice."
+"With the foundations of tokenization and evaluation laid out, we will now dive deeper into the representation space. Up next, my colleague Ameesh Makadia will take the stage to explore Latent Representations and Video Factorization. Please welcome Ameesh."
+Welcome to the second half of our tutorial. As we transition from evaluating generation quality, we now shift our focus to Ameesh Makadia from Google Research. He will be presenting a deep dive into Efficient Text-to-Image and Video Modeling, addressing the core challenges of scalability.
+Ameesh outlines three crucial perspectives on generative efficiency. The first is Compression: how can we create more compact latent spaces that inherently speed up the generation process? The second perspective focuses on Structured Representations: carefully designing the latent space architecture to enable highly efficient modeling. And the third is Data Sparsity: pioneering generative models specifically designed to thrive in settings with severely limited training data.
+These three perspectives perfectly frame the upcoming agenda. We will cover Part I on advanced video compression techniques, Part II exploring multiscale image generation using autoregressive models, and finally Part III on data-sparse diffusion from 3D shapes. Let's dive straight into Part One: Video Tokenization.
+"Welcome to Part I of this tutorial, where we will dive into factorized latent representations for video generation. Let's start by briefly reviewing how modern latent generative models operate on static images. Generating high-fidelity content directly in the high-dimensional pixel space is computationally prohibitive. To reduce this burden, we use an autoencoder architecture."
+"The encoder compresses the raw image into a much smaller latent representation. For example, a 512 by 512 RGB image might be squeezed into a 64 by 64 grid with 4 channels. This heavily compressed latent grid is trained using a combination of pixel-level Mean Squared Error, perceptual LPIPS loss, and adversarial discriminator losses to ensure the reconstructed image retains maximum visual fidelity."
+"This creates a powerful two-stage training paradigm. In Stage one, we train the autoencoder to learn this compressed visual feature space. In Stage two, we train a generative model specifically on these latent tokens. Depending on the architecture, individual tokens can be discrete—as seen in vector-quantized autoregressive models—or continuous, which is the foundation of latent diffusion models."
+"But what happens when we transition from images to videos? When autoencoding sequences, such as frames of a swimming jellyfish, the 2D flat grid is no longer sufficient. The data must be converted into a 3D spatiotemporal volume. We now have height, width, and a crucial third dimension: Time."
+And here lies the core problem: video tokenization. Autoencoding spatiotemporal volumes means the latent space scales linearly with the sequence length. This creates a massive storage and computational bottleneck of Order H times W times T. For modern architectures like Transformers, where self-attention scales quadratically with the sequence length, this linear expansion in the time dimension quickly makes long video generation computationally intractable."
+Up to this point, we have represented videos as dense three-dimensional latent volumes. While this preserves a vast amount of spatiotemporal information, the number of tokens grows linearly with video length and resolution, making it computationally expensive for generative modeling.
+To solve this, many architectures use Tri-plane Factorization. Instead of storing the entire 3D volume, we project it into three orthogonal 2D feature planes: the XY, XT, and YT planes. This aggressively compresses the latent space to scale sub-linearly with the input.
+These three distinct planes contain enough structural information to approximately reconstruct the original volume. This dramatically reduces the latent footprint, accelerating both diffusion training and sampling, while seamlessly leveraging 2D architectures.
+However, tri-planes compress far too much temporal information into a single XT and YT plane, which hurts generation quality for dynamic tasks like frame interpolation. To overcome this, the authors propose Four-plane Factorization.
+The core idea is to increase temporal capacity without inflating the latent size. The volume is split into two non-overlapping temporal segments. Each segment undergoes mean pooling to generate its own independent spatial plane, alongside two shared spatiotemporal planes.
+During recomposition, features from these four planes are concatenated and combined to reconstitute the spatiotemporal volume. This precise structure retains critical temporal dynamics while maintaining the massive computational benefits of orthogonal factorization.
+To empirically test this hypothesis, the authors integrated Four-plane into W.A.L.T, a state-of-the-art latent diffusion framework. First, the video is passed through a Magvit-v2 3D convolutional encoder to produce continuous latent tokens.
+Crucially, the authors did not redesign the core architecture. They exclusively modified the latent bottleneck, replacing the dense volumetric representation with the highly efficient Four-plane factorization and recomposition process.
+The encoder, the transformer diffusion model, and the decoder remain completely unchanged. This strict isolation proves that any subsequent gains in training speed and sampling efficiency come purely from reorganizing the latent space into four planes.
+"Now, let's turn our attention to the empirical evaluation of the Four-plane Factorization, starting with the reconstruction metrics. When comparing our highly compressed latent representations against the original volumetric baseline..."
+"...we observe that despite the massive reduction in the sequence length—from 1280 down to 672 tokens—the four-plane factorization achieves entirely comparable reconstruction quality across all key metrics."
+"But the true advantage of this architecture becomes evident when we evaluate the generative performance. By training a state-of-the-art diffusion model on the UCF-101 dataset, we can measure the Fréchet Video Distance."
+ "Remarkably, our Four-plane factorization not only maintains fidelity but actually improves the generation quality. It achieves an impressive FVD score of 58.27 on high-resolution videos, outperforming the heavy baseline."
+ "Furthermore, due to the radically shortened latent sequence length, the self-attention computation is heavily accelerated. This cuts the generation cost from 1.59 seconds down to just 0.71 seconds, making the sampling process more than two times faster."
+"Moving into Part Two of this tutorial, we shift our focus from diffusion frameworks to another massive and highly promising trend in latent generative models. Historically, diffusion has dominated by operating in a continuous space—iteratively adding and removing Gaussian noise. However, there is a paradigm shift towards treating images exactly like language. Autoregressive and Masked models do not deal with continuous noise; instead, they operate entirely in a discrete latent space, generating images token by token."
+"Recently, we have witnessed a powerful resurgence of Autoregressive, or AR models, such as LlamaGen, VAR, and Open-MAGVIT2. These models are now matching, and sometimes surpassing, diffusion models in image quality. Why is this happening? The strategic advantage of AR models lies in their ability to directly borrow from the incredibly successful, heavily optimized architectures of Large Language Models. Furthermore, they are inherently ideal for multimodal applications, where text, audio, and visual data are all unified as discrete tokens."
+"Despite these advantages, standard autoregressive generation faces a fundamental, structural challenge when applied to images. In natural language, words follow a strict sequential order, so standard left-to-right, next-token prediction works perfectly. But images are spatial, not purely sequential. When an AR model generates an image using a standard raster-scan order—reading from the top-left corner to the bottom-right—it is essentially reading a picture like a book."
+ "This creates a severe bottleneck. Early in the generative process, the model has only seen the top-left pixels—perhaps just a patch of blue sky or a few leaves. It is completely blind to what lies in the center or the bottom of the frame. Because it lacks a holistic view, standard AR struggles significantly to establish the global context, leading to broken structural consistency, misaligned subjects, and poor overall composition."
+"So, how do we solve this? How do we give an autoregressive model the ability to 'see the forest before the trees'? The solution lies in multiscale, coarse-to-fine tokenization. Instead of predicting an image blindly from left to right at full resolution, we force the model to grasp the global picture first, at a very low resolution, and then iteratively refine it by adding high-frequency details."
+"This brings us to advanced multiscale tokenizers like Visual Autoregressive modeling (VAR) and VQ-VAE-2. Looking at their pipelines, you can see a hierarchical approach. VQ-VAE-2, for instance, uses a Top-Level encoder for the coarse, global features, and a Bottom-Level encoder for the fine details. VAR takes this even further by predicting multiple scales of the latent space sequentially."
+"What makes these multiscale architectures so robust is their residual design. When the model predicts the tokens for the next, sharper scale, it heavily conditions its predictions on the coarser scales that were already generated. This guarantees that the high-resolution details will never break the underlying global structure, beautifully solving the poor context problem of standard AR."
+"To push this even further, recent works like the Spectral Image Tokenizer, or SIT, propose tokenizing Discrete Wavelet Transforms directly. By natively capturing the image across different frequency bands, we get a mathematically elegant coarse-to-fine representation, paving the way for the ultimate generation quality."
+
+Welcome back! In this section, we will dive deep into the fundamental shift brought by the Spectral Image Tokenizer, or SIT. Traditionally, generative models like ViT-VQGAN relied on a "Flat Tokenization" paradigm. As you can see on the left, an image is divided into a uniform grid of non-overlapping patches, and each patch is processed identically regardless of its content.
+However, this uniform approach is highly inefficient. Natural images contain vast areas of low-frequency, smooth content, mixed with sparse regions of high-frequency details. Flat tokenization wastes computational resources on smooth areas while simultaneously struggling to capture intricate details. Thus, we cross it out.
+Enter the "Multiscale Tokenization" paradigm, championed by SIT. As illustrated on the right, this approach dynamically allocates different patch sizes: larger patches for low-frequency structural information, and finer, smaller patches for high-frequency, sparse details.
+But how does SIT elegantly achieve this multiscale representation? The secret lies in the Discrete Wavelet Transform, or DWT. By applying the Haar Wavelet Transform, the model effectively separates the image into multiple frequency bands.
+The top-left quadrant represents the LL band, also known as the Approximation matrix. This band captures the coarse, low-frequency structure of the image, holding the overarching semantic layout.
+Conversely, the remaining quadrants capture the high-frequency sparse details—the sharp edges and textures that give an image its crispness and realism.
+The SIT architecture seamlessly integrates this. The DWT features are fed into a powerful Transformer Encoder, which analyzes the spatial relationships across these decomposed frequency bands.
+The encoded features are then passed through a Quantizer, transforming continuous signals into discrete tokens. Finally, a Transformer Decoder reconstructs these multiscale tokens back into the image domain. This entire pipeline forms the core of the Spectral Image Tokenizer.
+Let's delve into the mathematical foundation. The DWT heavily relies on Haar Wavelet Transform Filters. As you can see on the screen, these filters are elegantly simple yet incredibly powerful, utilizing addition and subtraction across 2-by-2 matrices.
+SIT introduces three groundbreaking technical innovations. The first is Dynamic Patch Sizing.
+ Instead of forcing a rigid grid, SIT uses a 2-by-2 patch for the coarse, low-frequency LL band, but dynamically switches to a much finer 8-by-8 patch for the high-frequency detail bands.
+ This brilliant design guarantees that we maintain the exact same number of tokens per scale! This dramatically limits the sequence length, ensuring computational efficiency without sacrificing detail.
+The second innovation is Scale-specific Codebooks.
+Since the content distribution changes drastically across scales—from smooth colors in the coarse band to sharp edges in the fine band—SIT maintains entirely separate quantization codebooks for each scale. This prevents the model from getting confused between structural shapes and fine textures.
+The third and perhaps most vital innovation is Scale-causal Self-attention.
+ In this masked attention mechanism, the low-frequency tokens are completely shielded from the high-frequency details. This strict causality ensures that the model always generates the overarching structure first, without being corrupted by microscopic noise or texture details.
+Moving on to the Detokenizer component, the Spectral Image Detokenizer, or SID, acts as the mirror image of the tokenizer.
+It takes the hierarchical multiscale tokens and flawlessly reconstructs them back into pixel space. As demonstrated in these ImageNet reconstructions, the grid confirms that SID retains astonishingly high fidelity.
+ Now, let's witness the true magic: Coarse-to-fine Autoregressive Generation.
+AR-SIT adopts an autoregressive paradigm. Given a text prompt, such as "a squirrel monkey", the AR-SIT model sequentially predicts the multiscale tokens, conditioning strictly on the previously generated coarse tokens.
+These dynamically generated tokens flow directly into the Detokenizer (SID), which instantly translates them into the final high-fidelity image that perfectly aligns with our prompt.
+This pipeline isn't just theory. As shown on the screen, whether it's zero-shot generation on the complex MSCOCO dataset, or Class-conditional generation at a massive 512 by 512 resolution, the output is consistently breathtaking.
+ Finally, let's explore the powerful downstream applications of this architecture.
+The first impressive application is Text-Guided Upsampling, which demonstrates the model's spatial understanding and resolution enhancement capabilities.
+By feeding a tiny, low-resolution 16-by-16 image along with a descriptive prompt, like "a cupcake on a red checkered tablecloth", into the AR-SIT module...
+ The generated continuous tokens are decoded by the SIT module, producing a stunningly sharp 256 by 256 image with newly hallucinated, hyper-accurate details.
+ Furthermore, the model excels at Text-Guided Localized Editing without requiring complex manual masks.
+For example, with the prompt "a close up of a dog face", AR-SIT intelligently alters only the specific high-frequency tokens corresponding to the animal's face...
+ ...resulting in a seamless transformation from a cat to a dog, preserving the original background entirely intact. The structural integrity remains untouched.
+In conclusion, the Spectral Image Tokenizer, coupled with its autoregressive framework, marks a paradigm shift in generative vision models. It proves that scaling up efficiently through frequency-aware tokenization is the definitive future of AI. Thank you so much for joining me on this deep dive into CVPR 2025. See you next time!

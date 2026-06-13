@@ -28,9 +28,10 @@ media/
 !media/.gitkeep
 *.log
 
-# Manim/LaTeX generated caches from older runs
+# Generated Assets
+assets/video_01/generated/
+assets/video_02/generated/
 assets/equations/
-assets/generated/
 
 # Local review frame grabs
 tmp_review_frames/
